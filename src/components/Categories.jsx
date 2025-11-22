@@ -5,26 +5,20 @@ function Categories() {
     {
       id: 1,
       icon: '🎉',
-      title: 'Social Events',
-      description: 'Coffee meetups, dinner parties, game nights, and more'
+      title: 'Events',
+      description: 'Coffee meetups, dinner parties, game nights, book clubs, art workshops, music jams, and more'
     },
     {
       id: 2,
       icon: '⚽',
       title: 'Sports',
-      description: 'Basketball, soccer, tennis, hiking, and team sports'
+      description: 'Basketball, soccer, tennis, hiking, volleyball, and team sports'
     },
     {
       id: 3,
       icon: '💪',
       title: 'Fitness',
-      description: 'Running clubs, yoga sessions, gym buddies, cycling groups'
-    },
-    {
-      id: 4,
-      icon: '🎨',
-      title: 'Gatherings',
-      description: 'Book clubs, art workshops, music jams, creative meetups'
+      description: 'Running clubs, yoga sessions, gym buddies, cycling groups, and wellness activities'
     }
   ];
 
