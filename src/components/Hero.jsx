@@ -17,7 +17,7 @@ function Hero() {
       <div className="hero-content">
         <h1>Connect Outside, Live Better</h1>
         <p className="hero-subtitle">
-          Join local events, sports activities, fitness groups, and gatherings. 
+          Join local events, sports activities, and fitness groups. 
           Meet real people, make real connections.
         </p>
         <div className="hero-buttons">
