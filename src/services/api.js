@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://a7d39eb3-4e66-443a-8123-d0f6593d1e17-00-2xcqtlyetdtvz.riker.replit.dev/api';
 
 // Add CORS headers support for direct API calls
 const fetchWithCORS = async (url, options = {}) => {
@@ -15,12 +15,21 @@ const fetchWithCORS = async (url, options = {}) => {
 export const eventService = {
   async getAllEvents() {
     try {
-      const response = await fetchWithCORS(`${API_BASE_URL}/events`);
+      const url = `${API_BASE_URL}/events`;
+      console.log('Fetching events from:', url);
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      console.log('Response status:', response.status);
       if (!response.ok) throw new Error(`Failed to fetch events: ${response.status}`);
-      return await response.json();
+      const data = await response.json();
+      console.log('Events loaded:', data.length);
+      return data;
     } catch (error) {
       console.error('Error fetching events:', error);
-      // Return empty array - component will use its built-in sample events
       return [];
     }
   },
