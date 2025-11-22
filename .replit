@@ -37,6 +37,10 @@ externalPort = 3001
 localPort = 5000
 externalPort = 80
 
+[[ports]]
+localPort = 39003
+externalPort = 3000
+
 [deployment]
 deploymentTarget = "static"
 run = ["npx", "vite", "preview"]
@@ -46,4 +50,4 @@ publicDir = "dist"
 [userenv]
 
 [userenv.shared]
-VITE_API_URL = "http://localhost:3001/api"
+VITE_API_URL = "https://a7d39eb3-4e66-443a-8123-d0f6593d1e17-00-2xcqtlyetdtvz.riker.replit.dev/api"
