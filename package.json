@@ -1,7 +1,7 @@
 {
-  "name": "connect",
+  "name": "connect-ui",
   "version": "1.0.0",
-  "description": "Connect application",
+  "description": "Connect - Community Events Platform UI",
   "main": "index.js",
   "scripts": {
     "dev": "vite",
