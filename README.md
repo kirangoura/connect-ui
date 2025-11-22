@@ -57,14 +57,15 @@ Located in `/backend` folder (ready to move to separate Git repo)
 
 ## Features
 1. **Hero Section** - Compelling value proposition
-2. **Category Cards** - 4 activity types (events, sports, fitness, gatherings)
-3. **Featured Events** - Dynamic event cards from database
+2. **Category Cards** - 3 activity types (events, sports, fitness)
+3. **Featured Events** - Dynamic event cards from database with search/filter
 4. **How It Works** - Step-by-step guide
 5. **Navigation** - Smooth scrolling
 6. **Responsive Design** - Mobile-friendly
-7. **Join Event** - Users can join events from the UI, API updates attendance count
-8. **Database Integration** - Real data from PostgreSQL via Spring Boot API
-9. **Flyway Migrations** - Auto database setup with sample data
+7. **Search & Filter** - Filter by location (city/area/zipcode) and category
+8. **Join Event** - Users can join events from the UI, API updates attendance count
+9. **Database Integration** - Real data from PostgreSQL via Spring Boot API
+10. **Flyway Migrations** - Auto database setup with sample data
 
 ## Configuration
 

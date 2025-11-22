@@ -86,6 +86,58 @@ function FeaturedEvents() {
       area: 'Downtown',
       attendees: 20,
       maxAttendees: 50
+    },
+    {
+      id: 7,
+      title: 'Beach Volleyball Tournament',
+      category: 'Sports',
+      icon: '🏐',
+      date: 'Saturday, 2:00 PM',
+      location: 'Ocean Beach',
+      city: 'Beaverton',
+      zipcode: '97006',
+      area: 'West Side',
+      attendees: 14,
+      maxAttendees: 18
+    },
+    {
+      id: 8,
+      title: 'Sunset Cycling Group',
+      category: 'Fitness',
+      icon: '🚴',
+      date: 'Friday, 5:30 PM',
+      location: 'Burnside Bridge',
+      city: 'Portland',
+      zipcode: '97214',
+      area: 'Southeast',
+      attendees: 9,
+      maxAttendees: 15
+    },
+    {
+      id: 9,
+      title: 'Art Exhibition Opening',
+      category: 'Events',
+      icon: '🎨',
+      date: 'Saturday, 10:00 AM',
+      location: 'Artist Studio',
+      city: 'Portland',
+      zipcode: '97214',
+      area: 'Southeast',
+      attendees: 5,
+      maxAttendees: 12
+    },
+    {
+      id: 10,
+      title: 'Brunch Social Meetup',
+      category: 'Events',
+      icon: '🥐',
+      date: 'Sunday, 10:30 AM',
+      location: 'Cafe Pearl',
+      city: 'Lake Oswego',
+      zipcode: '97034',
+      area: 'South',
+      attendees: 11,
+      maxAttendees: 16
     }
   ];
 
