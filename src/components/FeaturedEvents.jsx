@@ -2,12 +2,92 @@ import React, { useState, useEffect } from 'react';
 import { eventService } from '../services/api';
 
 function FeaturedEvents() {
+  const [allEvents, setAllEvents] = useState([]);
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchLocation, setSearchLocation] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
 
-  const categories = ['Social', 'Sports', 'Fitness', 'Gathering'];
+  const sampleEvents = [
+    {
+      id: 1,
+      title: 'Weekend Hiking Adventure',
+      category: 'Sports',
+      icon: '🥾',
+      date: 'Saturday, 9:00 AM',
+      location: 'Mountain Trail Park',
+      city: 'Portland',
+      zipcode: '97201',
+      area: 'Downtown',
+      attendees: 12,
+      maxAttendees: 15
+    },
+    {
+      id: 2,
+      title: 'Morning Yoga in the Park',
+      category: 'Fitness',
+      icon: '🧘',
+      date: 'Sunday, 7:00 AM',
+      location: 'Central Park',
+      city: 'Portland',
+      zipcode: '97210',
+      area: 'Central',
+      attendees: 8,
+      maxAttendees: 20
+    },
+    {
+      id: 3,
+      title: 'Coffee & Conversations',
+      category: 'Events',
+      icon: '☕',
+      date: 'Friday, 5:00 PM',
+      location: 'Downtown Cafe',
+      city: 'Portland',
+      zipcode: '97215',
+      area: 'Southeast',
+      attendees: 6,
+      maxAttendees: 10
+    },
+    {
+      id: 4,
+      title: 'Basketball Pickup Game',
+      category: 'Sports',
+      icon: '🏀',
+      date: 'Wednesday, 6:00 PM',
+      location: 'Community Center',
+      city: 'Portland',
+      zipcode: '97201',
+      area: 'Downtown',
+      attendees: 10,
+      maxAttendees: 12
+    },
+    {
+      id: 5,
+      title: 'Running Club Meetup',
+      category: 'Fitness',
+      icon: '🏃',
+      date: 'Tuesday, 6:30 AM',
+      location: 'Riverside Trail',
+      city: 'Portland',
+      zipcode: '97202',
+      area: 'Southwest',
+      attendees: 15,
+      maxAttendees: 25
+    },
+    {
+      id: 6,
+      title: 'Tech Meetup Night',
+      category: 'Events',
+      icon: '💻',
+      date: 'Thursday, 7:00 PM',
+      location: 'Tech Hub Downtown',
+      city: 'Portland',
+      zipcode: '97201',
+      area: 'Downtown',
+      attendees: 20,
+      maxAttendees: 50
+    }
+  ];
 
   useEffect(() => {
     loadEvents();
@@ -16,105 +96,46 @@ function FeaturedEvents() {
   const loadEvents = async () => {
     setLoading(true);
     const data = await eventService.getAllEvents();
-    if (data.length === 0) {
-      // Use sample data if API returns empty
-      setEvents([
-        {
-          id: 1,
-          title: 'Weekend Hiking Adventure',
-          category: 'Sports',
-          icon: '🥾',
-          date: 'Saturday, 9:00 AM',
-          location: 'Mountain Trail Park',
-          city: 'Portland',
-          zipcode: '97201',
-          area: 'Downtown',
-          attendees: 12,
-          maxAttendees: 15
-        },
-        {
-          id: 2,
-          title: 'Morning Yoga in the Park',
-          category: 'Fitness',
-          icon: '🧘',
-          date: 'Sunday, 7:00 AM',
-          location: 'Central Park',
-          city: 'Portland',
-          zipcode: '97210',
-          area: 'Central',
-          attendees: 8,
-          maxAttendees: 20
-        },
-        {
-          id: 3,
-          title: 'Coffee & Conversations',
-          category: 'Social',
-          icon: '☕',
-          date: 'Friday, 5:00 PM',
-          location: 'Downtown Cafe',
-          city: 'Portland',
-          zipcode: '97215',
-          area: 'Southeast',
-          attendees: 6,
-          maxAttendees: 10
-        },
-        {
-          id: 4,
-          title: 'Basketball Pickup Game',
-          category: 'Sports',
-          icon: '🏀',
-          date: 'Wednesday, 6:00 PM',
-          location: 'Community Center',
-          city: 'Portland',
-          zipcode: '97201',
-          area: 'Downtown',
-          attendees: 10,
-          maxAttendees: 12
-        },
-        {
-          id: 5,
-          title: 'Running Club Meetup',
-          category: 'Fitness',
-          icon: '🏃',
-          date: 'Tuesday, 6:30 AM',
-          location: 'Riverside Trail',
-          city: 'Portland',
-          zipcode: '97202',
-          area: 'Southwest',
-          attendees: 15,
-          maxAttendees: 25
-        },
-        {
-          id: 6,
-          title: 'Book Club Discussion',
-          category: 'Gathering',
-          icon: '📚',
-          date: 'Thursday, 7:00 PM',
-          location: 'Local Library',
-          city: 'Portland',
-          zipcode: '97210',
-          area: 'Central',
-          attendees: 7,
-          maxAttendees: 12
-        }
-      ]);
-    } else {
-      setEvents(data);
-    }
+    const eventsData = data.length > 0 ? data : sampleEvents;
+    setAllEvents(eventsData);
+    setEvents(eventsData);
     setLoading(false);
   };
 
-  const handleSearch = async () => {
+  const localSearch = (location, category) => {
+    let filtered = allEvents;
+
+    // Filter by location (city, area, or zipcode)
+    if (location && location.trim()) {
+      const searchTerm = location.toLowerCase().trim();
+      filtered = filtered.filter(event => {
+        return (
+          event.city?.toLowerCase().includes(searchTerm) ||
+          event.area?.toLowerCase().includes(searchTerm) ||
+          event.zipcode?.includes(searchTerm)
+        );
+      });
+    }
+
+    // Filter by category
+    if (category && category.trim()) {
+      filtered = filtered.filter(event => event.category === category);
+    }
+
+    return filtered;
+  };
+
+  const handleSearch = () => {
     setLoading(true);
-    const results = await eventService.searchEvents(searchLocation, selectedCategory);
-    setEvents(results.length > 0 ? results : []);
+    const results = localSearch(searchLocation, selectedCategory);
+    setEvents(results);
     setLoading(false);
   };
 
   const handleClearFilters = () => {
     setSearchLocation('');
     setSelectedCategory('');
-    loadEvents();
+    setEvents(allEvents);
   };
 
   const handleJoinEvent = async (eventId) => {
