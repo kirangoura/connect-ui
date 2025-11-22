@@ -20,6 +20,7 @@ export const eventService = {
       return await response.json();
     } catch (error) {
       console.error('Error fetching events:', error);
+      // Return empty array - component will use its built-in sample events
       return [];
     }
   },

@@ -16,7 +16,8 @@ export default defineConfig({
       '/api': {
         target: 'https://a7d39eb3-4e66-443a-8123-d0f6593d1e17-00-2xcqtlyetdtvz.riker.replit.dev',
         changeOrigin: true,
-        rewrite: (path) => path
+        secure: false,
+        ws: true
       }
     }
   },

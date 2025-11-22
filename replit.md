@@ -4,6 +4,24 @@
 
 Connect is a community platform that facilitates real-world connections through local events, sports activities, fitness groups, and social gatherings. The application uses a modern full-stack architecture with a React frontend and Spring Boot backend, designed to help people discover and join in-person experiences in their communities.
 
+## Current Status (Session November 22, 2025)
+
+✅ **Frontend (connect-ui)**: Fully functional React app with:
+  - Responsive design (mobile, tablet, desktop)
+  - Event browsing and filtering by location & category
+  - Integration layer ready for backend API
+  - Built-in sample events as fallback
+
+✅ **Backend (connect-api)**: Spring Boot REST API deployed separately with:
+  - PostgreSQL database with Flyway migrations
+  - Event CRUD endpoints
+  - CORS configuration for cross-origin requests
+  - Running successfully in separate Replit project
+
+⚠️ **Integration Status**: Frontend-backend connection requires proxy/API endpoint debugging
+  - See BACKEND_INTEGRATION_GUIDE.md for troubleshooting steps
+  - Sample events display as fallback until connection is established
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
