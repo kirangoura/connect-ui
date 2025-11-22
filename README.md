@@ -3,6 +3,10 @@
 ## Overview
 Connect is a community platform that helps people connect through real-world experiences. Users can discover and join local events, sports activities, fitness groups, and social gatherings to meet people in person and build meaningful connections.
 
+**This is the `connect-ui` repository (React Frontend)**
+
+For the backend API, see the separate `connect-api` repository.
+
 ## Project Purpose
 The platform addresses the need for authentic in-person connections by facilitating:
 - Social events (coffee meetups, dinner parties, game nights)
@@ -155,11 +159,31 @@ All endpoints under `/api`:
    VITE_API_URL=https://your-backend-url/api
    ```
 
+## Two-Repository Setup
+
+This is the **connect-ui** repository. The backend is in a separate **connect-api** repository:
+
+### connect-ui (This Project)
+- React 18 frontend
+- Vite build tool
+- Responsive mobile design
+- Deployed on Replit (or any static host)
+
+### connect-api (Separate Project)
+- Spring Boot 3.1.5 backend
+- PostgreSQL database
+- Flyway migrations
+- Deployed separately on Replit or Java hosting platform
+
+**Quick Start:**
+1. See `CONNECT_UI_SETUP.md` for this project
+2. See `CONNECT_API_SETUP.md` to set up the backend
+3. Connect them via `VITE_API_URL` environment variable
+
 ## Recent Changes (Nov 22, 2025)
-- Created React 18 application with modular components
-- Built complete Spring Boot backend with Gradle
-- Implemented Flyway database migrations with sample data
-- Created REST API with CRUD operations and join event feature
-- Integrated React frontend with backend API
-- Added environment configuration for database and API URL
-- Structured backend for easy separation to new Git repository
+- Separated UI and API into two Replit projects
+- Added mobile hamburger menu
+- Implemented responsive design (mobile, tablet, desktop)
+- Created search and filter functionality
+- Added comprehensive setup documentation
+- Configured for easy backend connection
