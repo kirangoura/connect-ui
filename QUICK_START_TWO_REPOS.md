@@ -15,36 +15,34 @@ npm run dev
 # Opens on http://localhost:5000
 ```
 
-### Step 2: Create Backend Project (connect-api)
+### Step 2: Get Backend Code
+Backend code is already pushed to GitHub!
+- **Repository:** https://github.com/kirangoura/connect-api
+- Clone or download the code
+
+### Step 3: Create Backend Project (connect-api)
 1. Go to [replit.com](https://replit.com)
 2. Click "Create" → Name it `connect-api`
-3. Language: Java (or leave blank, select later)
+3. Language: Java
 4. Create
 
-### Step 3: Set Up connect-api Backend
+### Step 4: Set Up connect-api Backend
 In your new **connect-api** Replit:
 
-1. Create project structure:
+1. Clone the backend repository:
 ```bash
-mkdir -p src/main/java/com/connect/{controller,service,repository,model,config}
-mkdir -p src/main/resources/db/migration
-mkdir gradle
+git clone https://github.com/kirangoura/connect-api.git .
 ```
 
-2. Copy these files from this project's `/backend` folder:
-   - `build.gradle`
-   - `settings.gradle`
-   - `.gitignore`
-   - `src/main/java/com/connect/` (all Java files)
-   - `src/main/resources/` (all config files)
+Or upload files manually if cloning doesn't work.
 
-3. Run:
+2. Run:
 ```bash
 ./gradlew bootRun
 # Backend runs on http://localhost:3001
 ```
 
-### Step 4: Connect Frontend to Backend
+### Step 5: Connect Frontend to Backend
 
 In **connect-ui** Replit (this one):
 1. Click **Secrets** tab (or Environment)
@@ -56,7 +54,7 @@ In **connect-ui** Replit (this one):
 
 Replace `YOUR-USERNAME` with your Replit username.
 
-### Step 5: Test Connection
+### Step 6: Test Connection
 
 Open your connect-ui app:
 - ✅ Events should load from backend

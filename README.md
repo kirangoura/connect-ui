@@ -170,6 +170,7 @@ This is the **connect-ui** repository. The backend is in a separate **connect-ap
 - Deployed on Replit (or any static host)
 
 ### connect-api (Separate Project)
+- **GitHub:** https://github.com/kirangoura/connect-api
 - Spring Boot 3.1.5 backend
 - PostgreSQL database
 - Flyway migrations
@@ -179,6 +180,7 @@ This is the **connect-ui** repository. The backend is in a separate **connect-ap
 1. See `CONNECT_UI_SETUP.md` for this project
 2. See `CONNECT_API_SETUP.md` to set up the backend
 3. Connect them via `VITE_API_URL` environment variable
+4. Backend repo: https://github.com/kirangoura/connect-api
 
 ## Recent Changes (Nov 22, 2025)
 - Separated UI and API into two Replit projects

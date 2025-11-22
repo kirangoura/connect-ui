@@ -37,8 +37,8 @@ connect-ui/
 ---
 
 ### connect-api (Separate Repository - Backend)
-**GitHub:** `github.com/your-username/connect-api` (You'll create this)
-**Replit:** New project (You'll create this)
+**GitHub:** https://github.com/kirangoura/connect-api
+**Replit:** New project (Create and clone backend code)
 
 ```
 connect-api/
