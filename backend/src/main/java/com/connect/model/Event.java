@@ -26,6 +26,12 @@ public class Event {
     @Column(nullable = false)
     private String location;
     
+    private String city;
+    
+    private String zipcode;
+    
+    private String area;
+    
     private String icon;
     
     @Column(nullable = false)
@@ -67,6 +73,15 @@ public class Event {
     
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
+    
+    public String getCity() { return city; }
+    public void setCity(String city) { this.city = city; }
+    
+    public String getZipcode() { return zipcode; }
+    public void setZipcode(String zipcode) { this.zipcode = zipcode; }
+    
+    public String getArea() { return area; }
+    public void setArea(String area) { this.area = area; }
     
     public String getIcon() { return icon; }
     public void setIcon(String icon) { this.icon = icon; }

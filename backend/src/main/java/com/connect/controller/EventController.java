@@ -46,4 +46,12 @@ public class EventController {
     public ResponseEntity<Event> joinEvent(@PathVariable Long id) {
         return ResponseEntity.ok(eventService.joinEvent(id));
     }
+    
+    @GetMapping("/search/filter")
+    public ResponseEntity<List<Event>> filterEvents(
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) String zipcode,
+            @RequestParam(required = false) String area) {
+        return ResponseEntity.ok(eventService.filterEvents(city, zipcode, area));
+    }
 }

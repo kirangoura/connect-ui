@@ -50,5 +50,22 @@ export const eventService = {
       console.error('Error joining event:', error);
       throw error;
     }
+  },
+
+  async filterEvents(filters) {
+    try {
+      const params = new URLSearchParams();
+      if (filters.city) params.append('city', filters.city);
+      if (filters.zipcode) params.append('zipcode', filters.zipcode);
+      if (filters.area) params.append('area', filters.area);
+      
+      const url = params.toString() ? `${API_BASE_URL}/events/search/filter?${params}` : `${API_BASE_URL}/events`;
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Failed to filter events');
+      return await response.json();
+    } catch (error) {
+      console.error('Error filtering events:', error);
+      return [];
+    }
   }
 };
