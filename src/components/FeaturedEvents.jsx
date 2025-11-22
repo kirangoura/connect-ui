@@ -182,10 +182,9 @@ function FeaturedEvents() {
                 }}
               >
                 <option value="">All Categories</option>
-                <option value="Social">Social Events</option>
+                <option value="Events">Events</option>
                 <option value="Sports">Sports</option>
                 <option value="Fitness">Fitness</option>
-                <option value="Gathering">Gatherings</option>
               </select>
             </div>
           </div>
