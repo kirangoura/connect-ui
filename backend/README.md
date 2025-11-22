@@ -1,34 +1,37 @@
-# Connect API
+# Connect API - Spring Boot
 
-Backend API for the Connect community events platform.
+Backend API for Connect community events platform using Spring Boot, PostgreSQL, and Flyway.
 
 ## Setup
 
-1. Create `.env` file with database connection:
-```
-DATABASE_URL=postgresql://user:password@localhost:5432/connect_db
-PORT=3001
+1. Set environment variables:
+```bash
+export DATABASE_URL=jdbc:postgresql://localhost:5432/connect_db
+export DB_USER=postgres
+export DB_PASSWORD=yourpassword
 ```
 
-2. Install dependencies:
+2. Build the project:
 ```bash
-npm install
+./gradlew build
 ```
 
-3. Start the server:
+3. Run the application:
 ```bash
-npm run dev
+./gradlew bootRun
 ```
+
+The API will be available at `http://localhost:3001/api`
 
 ## API Endpoints
 
 - `GET /api/events` - Get all events
-- `GET /api/events/:id` - Get single event
-- `POST /api/events` - Create event
-- `PUT /api/events/:id` - Update event
-- `DELETE /api/events/:id` - Delete event
-- `POST /api/events/:id/join` - Join event
+- `GET /api/events/{id}` - Get event by ID
+- `POST /api/events` - Create new event
+- `PUT /api/events/{id}` - Update event
+- `DELETE /api/events/{id}` - Delete event
+- `POST /api/events/{id}/join` - Join an event
 
 ## Database
 
-PostgreSQL database with events table. Initialize on first run.
+PostgreSQL with Flyway migrations. Migrations are automatically applied on startup.

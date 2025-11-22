@@ -11,93 +11,146 @@ The platform addresses the need for authentic in-person connections by facilitat
 - Creative gatherings (book clubs, art workshops, music jams)
 
 ## Project Structure
-- `index.html` - Main HTML entry point with root div
+
+### Frontend (React - Port 5000)
+- `index.html` - Main HTML entry point
 - `src/` - React application source code
   - `main.jsx` - React entry point
   - `App.jsx` - Main application component
-  - `index.css` - Global styles with CSS variables
-  - `components/` - React components
-    - `Navbar.jsx` - Navigation bar with smooth scrolling
-    - `Hero.jsx` - Hero section component
-    - `Categories.jsx` - Activity categories display
-    - `FeaturedEvents.jsx` - Event cards listing
-    - `HowItWorks.jsx` - Steps explanation section
-    - `CTASection.jsx` - Call-to-action section
-    - `Footer.jsx` - Footer component
-- `vite.config.mjs` - Vite configuration optimized for Replit environment
-- `package.json` - Node.js dependencies and build scripts
+  - `index.css` - Global styles
+  - `components/` - React components (Navbar, Hero, Categories, FeaturedEvents, HowItWorks, CTASection, Footer)
+  - `services/api.js` - API service layer
+- `vite.config.mjs` - Vite configuration
+- `package.json` - Dependencies
+
+### Backend (Spring Boot - Port 3001)
+Located in `/backend` folder (ready to move to separate Git repo)
+- `build.gradle` - Gradle build configuration
+- `settings.gradle` - Gradle settings
+- `src/main/java/com/connect/` - Java source code
+  - `ConnectApplication.java` - Spring Boot main application
+  - `controller/EventController.java` - REST API endpoints
+  - `service/EventService.java` - Business logic
+  - `repository/EventRepository.java` - Database repository
+  - `model/Event.java` - Event entity
+  - `config/` - Configuration classes
+- `src/main/resources/` - Configuration and migrations
+  - `application.properties` - Spring Boot configuration
+  - `db/migration/V1__Create_events_table.sql` - Flyway database migration
+- `.gitignore` - Git ignore rules
+- `README.md` - Backend documentation
 
 ## Technology Stack
-- **Frontend Framework**: React 18
+
+### Frontend
+- **Framework**: React 18
 - **Build Tool**: Vite 5.x
 - **Runtime**: Node.js 20
-- **Styling**: CSS with CSS variables for theming
-- **Component Architecture**: Functional components with hooks
+- **Styling**: CSS with CSS variables
+
+### Backend
+- **Framework**: Spring Boot 3.1.5
+- **Build Tool**: Gradle
+- **Database**: PostgreSQL
+- **Migrations**: Flyway
+- **Java Version**: 17+
 
 ## Features
-1. **Hero Section**: Compelling value proposition with CTAs for exploring and creating events
-2. **Category Cards**: Interactive cards for different activity types (events, sports, fitness, gatherings)
-3. **Featured Events**: Dynamic event cards showing upcoming activities with attendee counts
-4. **How It Works**: Step-by-step guide for users
-5. **Navigation**: Smooth-scrolling anchor links to different sections
-6. **Responsive Design**: Mobile-friendly layout that adapts to all screen sizes
+1. **Hero Section** - Compelling value proposition
+2. **Category Cards** - 4 activity types (events, sports, fitness, gatherings)
+3. **Featured Events** - Dynamic event cards from database
+4. **How It Works** - Step-by-step guide
+5. **Navigation** - Smooth scrolling
+6. **Responsive Design** - Mobile-friendly
+7. **Join Event** - Users can join events from the UI, API updates attendance count
+8. **Database Integration** - Real data from PostgreSQL via Spring Boot API
+9. **Flyway Migrations** - Auto database setup with sample data
 
 ## Configuration
-- **Dev Server**: Runs on port 5000 with host 0.0.0.0
-- **HMR**: Configured for Replit's proxy environment with WSS protocol on port 443
-- **Workflow**: "Start application" runs `npm run dev`
 
-## Recent Changes (Nov 22, 2025)
-- Transformed minimal GitHub repository into full community events platform
-- **Converted to React application**: Migrated from vanilla JavaScript to React 18
-- Created modular React component architecture with 8 reusable components
-- Implemented React functional components with proper state management
-- Built category system for events, sports, fitness, and gatherings
-- Implemented dynamic event cards with sample data using React state
-- Added smooth-scrolling navigation with section anchors
-- Designed modern, engaging UI with gradient backgrounds and card-based layouts
-- Configured Vite with React plugin for optimal HMR and development experience
-- Fixed Vite configuration for Replit proxy environment (allowedHosts, HMR WebSocket)
-- Set up deployment configuration for autoscale hosting
+### Environment Variables
+Create `.env` file or set these variables:
+```
+VITE_API_URL=http://localhost:3001/api
+DATABASE_URL=jdbc:postgresql://localhost:5432/connect_db
+DB_USER=postgres
+DB_PASSWORD=password
+```
+
+### Frontend Dev Server
+- Runs on port 5000 with host 0.0.0.0
+- HMR configured for Replit proxy
+
+### Backend API
+- Runs on port 3001
+- CORS enabled for frontend
+- All traffic goes through `/api` context path
 
 ## Development
-To run the development server:
+
+### Start Frontend
 ```bash
+npm install
 npm run dev
 ```
 
-The application will be available at the Replit webview preview on port 5000.
-
-## Build
-To create a production build:
+### Start Backend
 ```bash
-npm run build
+cd backend
+./gradlew bootRun
 ```
 
+The frontend will call the Spring Boot API at `http://localhost:3001/api/events`
+
+## Database Setup
+
+PostgreSQL database with Flyway migrations. On first run:
+1. Connect to your PostgreSQL instance
+2. Create database: `CREATE DATABASE connect_db;`
+3. Spring Boot will automatically run Flyway migrations
+4. Sample data will be inserted by migration script
+
+## API Endpoints
+
+All endpoints under `/api`:
+- `GET /events` - Get all events
+- `GET /events/{id}` - Get event by ID
+- `POST /events` - Create new event
+- `PUT /events/{id}` - Update event
+- `DELETE /events/{id}` - Delete event
+- `POST /events/{id}/join` - Join event (increments attendee count)
+
+## Repository Structure
+
+### Current Repo (Frontend)
+- React application
+- Calls backend API
+- Can be deployed as static site
+
+### Backend Repo (Ready to separate)
+- `/backend` folder contains complete Spring Boot application
+- Can be cloned/pushed to separate GitHub repository
+- Has own build system (Gradle)
+- Own database migrations (Flyway)
+- Independent deployment
+
 ## Deployment
-The project is configured for autoscale deployment:
-- Build command: `npm run build`
-- Run command: `npx vite preview`
-- Deployment target: autoscale (stateless web application)
 
-## Architecture Notes
-- **React Component Structure**: Application split into 8 modular components for maintainability
-- **Vite Configuration**: Uses `.mjs` extension for ESM compatibility with React plugin
-- The Vite server is configured to accept all hosts to work with Replit's proxy system
-- HMR uses WSS protocol on port 443 for hot module reloading through the proxy
-- The server binds to 0.0.0.0:5000 as required by Replit's frontend hosting
-- Event data is currently stored in component state (sample data) - ready for backend integration
-- Smooth scrolling uses native `scrollIntoView` API for optimal performance
-- CSS uses custom properties for easy theming and maintenance
-- React DevTools can be used for component debugging and performance optimization
+### Frontend
+- Static build with `npm run build`
+- Deploy to Netlify, Vercel, or Replit hosting
 
-## Future Enhancement Ideas
-- User authentication and profiles
-- Backend API for real event data
-- Event creation and management
-- RSVP and attendee management
-- Location-based event filtering
-- Calendar integration
-- Social features (comments, ratings)
-- Image uploads for events
-- Email notifications
+### Backend
+- Build with `./gradlew build`
+- Run with `./gradlew bootRun` or jar file
+- Requires PostgreSQL connection
+- Flyway will auto-run migrations
+
+## Recent Changes (Nov 22, 2025)
+- Created React 18 application with modular components
+- Built complete Spring Boot backend with Gradle
+- Implemented Flyway database migrations with sample data
+- Created REST API with CRUD operations and join event feature
+- Integrated React frontend with backend API
+- Added environment configuration for database and API URL
+- Structured backend for easy separation to new Git repository
