@@ -23,22 +23,20 @@ The platform addresses the need for authentic in-person connections by facilitat
 - `vite.config.mjs` - Vite configuration
 - `package.json` - Dependencies
 
-### Backend (Spring Boot - Port 3001)
-Located in `/backend` folder (ready to move to separate Git repo)
+### Backend (Spring Boot - Separate Repository)
+The backend is in the `/backend` folder and ready to be moved to a separate Git repository. This enables independent deployment and scaling.
+
+To deploy the backend:
+1. Create a new GitHub repository for the backend
+2. Push the `/backend` folder contents to that repository
+3. Deploy to a Java-hosting platform (Heroku, Railway, AWS, Google Cloud, etc.)
+4. Update `VITE_API_URL` environment variable to point to your deployed backend
+
+**Backend Folder Contents:**
 - `build.gradle` - Gradle build configuration
 - `settings.gradle` - Gradle settings
-- `src/main/java/com/connect/` - Java source code
-  - `ConnectApplication.java` - Spring Boot main application
-  - `controller/EventController.java` - REST API endpoints
-  - `service/EventService.java` - Business logic
-  - `repository/EventRepository.java` - Database repository
-  - `model/Event.java` - Event entity
-  - `config/` - Configuration classes
-- `src/main/resources/` - Configuration and migrations
-  - `application.properties` - Spring Boot configuration
-  - `db/migration/V1__Create_events_table.sql` - Flyway database migration
-- `.gitignore` - Git ignore rules
-- `README.md` - Backend documentation
+- `src/main/java/com/connect/` - Java source code (Controllers, Services, Repositories, Models)
+- `src/main/resources/` - Configuration and Flyway database migrations
 
 ## Technology Stack
 
@@ -95,13 +93,10 @@ npm install
 npm run dev
 ```
 
-### Start Backend
-```bash
-cd backend
-./gradlew bootRun
-```
+The frontend runs on port 5000 and uses sample data when the backend API is unavailable.
 
-The frontend will call the Spring Boot API at `http://localhost:3001/api/events`
+### Backend Deployment
+The backend is in a separate folder and designed to be deployed independently. See the Backend folder `/backend/README.md` for deployment instructions.
 
 ## Database Setup
 
@@ -137,15 +132,28 @@ All endpoints under `/api`:
 
 ## Deployment
 
-### Frontend
-- Static build with `npm run build`
-- Deploy to Netlify, Vercel, or Replit hosting
+### Frontend (This Repository)
+**Via Replit:**
+1. Click the "Publish" button at the top of your Replit workspace
+2. Choose "Autoscale" deployment type
+3. Get a public URL like `https://your-app.replit.dev`
 
-### Backend
-- Build with `./gradlew build`
-- Run with `./gradlew bootRun` or jar file
-- Requires PostgreSQL connection
-- Flyway will auto-run migrations
+**Alternatively:**
+- Build with `npm run build` (creates `dist/` folder)
+- Deploy to Netlify, Vercel, or any static hosting service
+
+### Backend (Separate Repository)
+1. Create a new Git repository for `/backend`
+2. Push backend code to GitHub
+3. Deploy to Java-hosting platform:
+   - **Heroku** - Free tier available
+   - **Railway** - Modern alternative
+   - **AWS/Google Cloud** - Enterprise solutions
+
+4. Update environment variable:
+   ```
+   VITE_API_URL=https://your-backend-url/api
+   ```
 
 ## Recent Changes (Nov 22, 2025)
 - Created React 18 application with modular components

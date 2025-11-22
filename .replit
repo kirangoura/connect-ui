@@ -17,33 +17,17 @@ author = "agent"
 task = "workflow.run"
 args = "Start application"
 
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Start backend"
-
 [[workflows.workflow]]
 name = "Start application"
 author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run dev"
 waitForPort = 5000
-
-[workflows.workflow.metadata]
-outputType = "webview"
-
-[[workflows.workflow]]
-name = "Start backend"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "cd backend && ./gradlew bootRun"
-waitForPort = 3001
-
-[workflows.workflow.metadata]
-outputType = "console"
 
 [[ports]]
 localPort = 3001
@@ -54,6 +38,7 @@ localPort = 5000
 externalPort = 80
 
 [deployment]
-deploymentTarget = "autoscale"
+deploymentTarget = "static"
 run = ["npx", "vite", "preview"]
 build = ["npm", "run", "build"]
+publicDir = "dist"
