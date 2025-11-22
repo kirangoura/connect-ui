@@ -1,10 +1,22 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
+// Add CORS headers support for direct API calls
+const fetchWithCORS = async (url, options = {}) => {
+  return fetch(url, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+    credentials: 'omit'
+  });
+};
+
 export const eventService = {
   async getAllEvents() {
     try {
-      const response = await fetch(`${API_BASE_URL}/events`);
-      if (!response.ok) throw new Error('Failed to fetch events');
+      const response = await fetchWithCORS(`${API_BASE_URL}/events`);
+      if (!response.ok) throw new Error(`Failed to fetch events: ${response.status}`);
       return await response.json();
     } catch (error) {
       console.error('Error fetching events:', error);
@@ -14,7 +26,7 @@ export const eventService = {
 
   async getEvent(id) {
     try {
-      const response = await fetch(`${API_BASE_URL}/events/${id}`);
+      const response = await fetchWithCORS(`${API_BASE_URL}/events/${id}`);
       if (!response.ok) throw new Error('Event not found');
       return await response.json();
     } catch (error) {
@@ -25,9 +37,8 @@ export const eventService = {
 
   async createEvent(event) {
     try {
-      const response = await fetch(`${API_BASE_URL}/events`, {
+      const response = await fetchWithCORS(`${API_BASE_URL}/events`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(event)
       });
       if (!response.ok) throw new Error('Failed to create event');
@@ -40,9 +51,8 @@ export const eventService = {
 
   async joinEvent(id) {
     try {
-      const response = await fetch(`${API_BASE_URL}/events/${id}/join`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+      const response = await fetchWithCORS(`${API_BASE_URL}/events/${id}/join`, {
+        method: 'POST'
       });
       if (!response.ok) throw new Error('Failed to join event');
       return await response.json();
@@ -59,7 +69,7 @@ export const eventService = {
       if (category) params.append('category', category);
       
       const url = params.toString() ? `${API_BASE_URL}/events/search?${params}` : `${API_BASE_URL}/events`;
-      const response = await fetch(url);
+      const response = await fetchWithCORS(url);
       if (!response.ok) throw new Error('Failed to search events');
       return await response.json();
     } catch (error) {
