@@ -9,6 +9,14 @@ function Navbar() {
     }
   };
 
+  const handleJoinNow = (e) => {
+    e.preventDefault();
+    const element = document.getElementById('events');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
     <nav className="navbar">
       <div className="nav-container">
@@ -18,7 +26,7 @@ function Navbar() {
           <a href="#sports" onClick={(e) => scrollToSection(e, 'sports')}>Sports</a>
           <a href="#fitness" onClick={(e) => scrollToSection(e, 'fitness')}>Fitness</a>
           <a href="#about" onClick={(e) => scrollToSection(e, 'about')}>About</a>
-          <button className="btn-primary">Join Now</button>
+          <button className="btn-primary" onClick={handleJoinNow}>Join Now</button>
         </div>
       </div>
     </nav>

@@ -28,13 +28,25 @@ function Categories() {
     }
   ];
 
+  const handleCategoryClick = (categoryName) => {
+    const element = document.getElementById('events');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <section className="categories" id="sports">
       <div className="container">
         <h2 className="section-title">What Do You Want To Do?</h2>
         <div className="category-grid">
           {categories.map((category) => (
-            <div key={category.id} className="category-card">
+            <div 
+              key={category.id} 
+              className="category-card"
+              onClick={() => handleCategoryClick(category.title)}
+              style={{ cursor: 'pointer' }}
+            >
               <div className="category-icon">{category.icon}</div>
               <h3>{category.title}</h3>
               <p>{category.description}</p>
