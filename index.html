@@ -3,14 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connect</title>
+    <title>Connect - Meet People, Make Memories</title>
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome to Connect</h1>
-        <p>Your application is now running on Replit!</p>
-    </div>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">Connect</div>
+            <div class="nav-links">
+                <a href="#events">Events</a>
+                <a href="#sports">Sports</a>
+                <a href="#fitness">Fitness</a>
+                <a href="#about">About</a>
+                <button class="btn-primary">Join Now</button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Connect Outside, Live Better</h1>
+            <p class="hero-subtitle">Join local events, sports activities, fitness groups, and gatherings. Meet real people, make real connections.</p>
+            <div class="hero-buttons">
+                <button class="btn-large btn-primary">Explore Activities</button>
+                <button class="btn-large btn-secondary">Create Event</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="categories" id="sports">
+        <div class="container">
+            <h2 class="section-title">What Do You Want To Do?</h2>
+            <div class="category-grid">
+                <div class="category-card">
+                    <div class="category-icon">🎉</div>
+                    <h3>Social Events</h3>
+                    <p>Coffee meetups, dinner parties, game nights, and more</p>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">⚽</div>
+                    <h3>Sports</h3>
+                    <p>Basketball, soccer, tennis, hiking, and team sports</p>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">💪</div>
+                    <h3>Fitness</h3>
+                    <p>Running clubs, yoga sessions, gym buddies, cycling groups</p>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">🎨</div>
+                    <h3>Gatherings</h3>
+                    <p>Book clubs, art workshops, music jams, creative meetups</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="featured-events" id="events">
+        <div class="container">
+            <h2 class="section-title">Happening This Week</h2>
+            <div class="events-grid" id="eventsGrid">
+                <!-- Events will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <section class="how-it-works" id="about">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3>Browse Activities</h3>
+                    <p>Find events, sports, and gatherings near you</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3>Join or Create</h3>
+                    <p>RSVP to existing events or create your own</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3>Connect & Meet</h3>
+                    <p>Show up and make real connections in person</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section" id="fitness">
+        <div class="container">
+            <h2>Ready to Get Outside?</h2>
+            <p>Join thousands of people connecting through real-world experiences</p>
+            <button class="btn-large btn-primary">Get Started Free</button>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Connect. Making real connections, one event at a time.</p>
+        </div>
+    </footer>
+
     <script type="module" src="/main.js"></script>
 </body>
 </html>
