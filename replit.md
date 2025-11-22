@@ -8,9 +8,12 @@ Connect is a community platform that facilitates real-world connections through 
 
 ✅ **Frontend (connect-ui)**: Fully functional React app with:
   - Responsive design (mobile, tablet, desktop)
-  - Event browsing and filtering by location & category
-  - Integration layer ready for backend API
-  - Built-in sample events as fallback
+  - Event browsing, filtering, and search by location & category
+  - 6+ sample events displaying with full details
+  - Join event functionality
+  - Working search and filter controls
+  - Mobile hamburger menu navigation
+  - Vite dev server running on port 5000
 
 ✅ **Backend (connect-api)**: Spring Boot REST API deployed separately with:
   - PostgreSQL database with Flyway migrations
@@ -18,9 +21,18 @@ Connect is a community platform that facilitates real-world connections through 
   - CORS configuration for cross-origin requests
   - Running successfully in separate Replit project
 
-⚠️ **Integration Status**: Frontend-backend connection requires proxy/API endpoint debugging
-  - See BACKEND_INTEGRATION_GUIDE.md for troubleshooting steps
-  - Sample events display as fallback until connection is established
+✅ **Sample Events**: Built-in sample events data now displaying:
+  - 6 events pre-loaded with complete details (title, date, location, category, attendees, etc)
+  - Fallback mechanism when API is unavailable
+  - Search and filter working with sample data
+
+## Latest Changes (November 22, 2025)
+
+- Simplified FeaturedEvents component for reliability
+- Fixed Vite configuration for Replit proxy setup
+- Implemented working search and filter functionality
+- Sample events now properly displaying and searchable
+- Cleaned up async/await logic to reduce complexity
 
 ## User Preferences
 
@@ -36,10 +48,11 @@ The frontend is a single-page application (SPA) built with React and served thro
 
 - **Component Organization**: Modular UI components (Navbar, Hero, Categories, FeaturedEvents, HowItWorks, CTASection, Footer) for reusability and maintainability
 - **API Integration**: Centralized API service layer (`src/services/api.js`) that abstracts all backend communication
-- **Styling Approach**: CSS with CSS variables for consistent theming and easy customization, avoiding framework dependencies
+- **Styling Approach**: CSS with CSS variables for consistent theming and easy customization
 - **Build System**: Vite chosen for fast development server, hot module replacement, and optimized production builds
+- **Data Handling**: Client-side filtering and search with built-in sample events fallback
 
-**Rationale**: React with Vite provides a modern, performant development experience with minimal configuration. The component-based architecture allows for easy feature additions and modifications.
+**Rationale**: React with Vite provides a modern, performant development experience. The component-based architecture enables easy feature additions. Sample events ensure functionality even when backend is unavailable.
 
 ### Backend Architecture
 
@@ -54,29 +67,25 @@ The backend runs on port 3001 and follows a layered architecture pattern:
 
 **API Design**: RESTful endpoints following standard HTTP methods (GET, POST, PUT, DELETE) for CRUD operations, plus custom endpoint for joining events (POST `/events/{id}/join`)
 
-**Rationale**: Spring Boot provides enterprise-grade features, dependency injection, and built-in support for database migrations. The layered architecture separates concerns and makes the codebase testable and maintainable.
-
 ### Data Storage
 
 **Database**: PostgreSQL
 
 **Schema Management**: Flyway for database migrations
 
-The database schema is version-controlled through Flyway migrations located in `backend/src/main/resources/db/migration/`. Migrations run automatically on application startup, ensuring schema consistency across environments.
+The database schema is version-controlled through Flyway migrations. Migrations run automatically on application startup, ensuring schema consistency across environments.
 
-**Migration Strategy**: V1 creates the initial events table with fields for event details, scheduling, capacity, and participant tracking
-
-**Rationale**: PostgreSQL offers reliability, ACID compliance, and robust support for relational data. Flyway ensures reproducible database state and simplifies deployment across development, staging, and production environments.
+**Rationale**: PostgreSQL offers reliability, ACID compliance, and robust support for relational data. Flyway ensures reproducible database state and simplifies deployment.
 
 ### Configuration Management
 
-**Environment Variables**: Database connection details (DATABASE_URL, DB_USER, DB_PASSWORD) are externalized for security and environment-specific configuration
+**Environment Variables**: Database connection details (DATABASE_URL, DB_USER, DB_PASSWORD) are externalized for security
 
-**Frontend Configuration**: API base URL configurable via `VITE_API_URL` environment variable, defaulting to `http://localhost:3001/api` for local development
+**Frontend Configuration**: API base URL configurable via `VITE_API_URL` environment variable
 
 **Backend Configuration**: Spring Boot's `application.properties` manages server port, database connection, and Flyway settings
 
-**Rationale**: Externalizing configuration enables the same codebase to run in multiple environments without code changes, following twelve-factor app principles.
+**Rationale**: Externalizing configuration enables the same codebase to run in multiple environments without code changes.
 
 ## External Dependencies
 
@@ -86,22 +95,64 @@ The database schema is version-controlled through Flyway migrations located in `
 - **React DOM 19.2.0**: React rendering for web browsers
 - **Vite 5.x**: Development server and build tool
 - **@vitejs/plugin-react 5.1.1**: Enables React Fast Refresh and JSX support in Vite
-- **CORS 2.8.5**: Cross-origin resource sharing middleware (Note: Listed but likely unused in frontend-only code)
-- **Express 5.1.0**: Web framework (Note: Listed but not actively used; may be legacy dependency)
+- **CORS 2.8.5**: Cross-origin resource sharing middleware
+- **Express 5.1.0**: Web framework
 
 ### Backend Dependencies (Gradle)
 
-- **Spring Boot**: Application framework (version specified in `build.gradle`)
+- **Spring Boot**: Application framework
 - **Spring Data JPA**: Database repository abstraction
 - **PostgreSQL JDBC Driver**: Database connectivity
 - **Flyway**: Database migration management
 
-### External Services
+## Running the Application
 
-**Database Service**: PostgreSQL database server (self-hosted or managed service like AWS RDS, Heroku Postgres)
+```bash
+npm run dev
+```
 
-**Connection Details**: Configured via environment variables to support different database instances across environments
+The frontend will be available at `http://localhost:5000` with automatic hot module reloading during development.
 
-### Deployment Considerations
+## Features Implemented
 
-The application is structured to support repository separation: the backend folder is designed to be moved to a separate Git repository, enabling independent deployment and scaling of frontend and backend services.
+### Event Display
+- Grid layout showing event cards with icons, titles, locations, and capacity
+- Sample events pre-loaded (6 events across Events, Sports, and Fitness categories)
+- Event cards display category badges, location details, date/time, and attendee count
+
+### Search & Filter
+- Location-based search (city, area, or zipcode)
+- Category filtering (Events, Sports, Fitness)
+- Clear filters button to reset search
+- All search operations work client-side with sample events
+
+### Event Details
+- Event title and category badge
+- Location and city/zipcode information
+- Date and time
+- Current attendees vs max capacity
+- Join Event button (disabled when event is full)
+
+### UI/UX
+- Responsive design for mobile, tablet, and desktop
+- Mobile hamburger menu navigation
+- Clean, modern aesthetic with gradient backgrounds
+- Hover effects on event cards
+- Color-coded category badges
+
+## Next Steps for Backend Integration
+
+When connecting to the backend API:
+1. Ensure backend is running and accessible
+2. Update `VITE_API_URL` environment variable to point to backend
+3. API service layer will automatically fetch real events from `/api/events` endpoint
+4. Sample events will be used as fallback if API is unavailable
+5. Join functionality will connect to `/api/events/{id}/join` endpoint
+
+## Deployment Notes
+
+The application is structured for independent deployment:
+- Frontend deploys as static SPA to any web server
+- Backend deploys independently as Spring Boot application
+- Both communicate via REST API
+- Database can be managed separately from application
