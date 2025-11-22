@@ -5,7 +5,7 @@ function HowItWorks() {
     {
       number: 1,
       title: 'Browse Activities',
-      description: 'Find events, sports, and gatherings near you'
+      description: 'Find events, sports, and fitness near you'
     },
     {
       number: 2,
