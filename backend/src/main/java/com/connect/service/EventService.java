@@ -49,21 +49,13 @@ public class EventService {
         throw new RuntimeException("Event is full");
     }
     
-    public List<Event> filterEvents(String city, String zipcode, String area) {
-        if (city != null && zipcode != null && area != null) {
-            return eventRepository.findByCityAndZipcodeAndArea(city, zipcode, area);
-        } else if (city != null && zipcode != null) {
-            return eventRepository.findByCityAndZipcode(city, zipcode);
-        } else if (city != null && area != null) {
-            return eventRepository.findByCityAndArea(city, area);
-        } else if (zipcode != null && area != null) {
-            return eventRepository.findByZipcodeAndArea(zipcode, area);
-        } else if (city != null) {
-            return eventRepository.findByCity(city);
-        } else if (zipcode != null) {
-            return eventRepository.findByZipcode(zipcode);
-        } else if (area != null) {
-            return eventRepository.findByArea(area);
+    public List<Event> searchAndFilterEvents(String location, String category) {
+        if (location != null && !location.trim().isEmpty() && category != null && !category.trim().isEmpty()) {
+            return eventRepository.searchByLocationAndCategory(location, category);
+        } else if (location != null && !location.trim().isEmpty()) {
+            return eventRepository.searchByLocation(location);
+        } else if (category != null && !category.trim().isEmpty()) {
+            return eventRepository.findByCategory(category);
         } else {
             return eventRepository.findAll();
         }

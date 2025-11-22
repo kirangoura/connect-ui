@@ -52,19 +52,18 @@ export const eventService = {
     }
   },
 
-  async filterEvents(filters) {
+  async searchEvents(location, category) {
     try {
       const params = new URLSearchParams();
-      if (filters.city) params.append('city', filters.city);
-      if (filters.zipcode) params.append('zipcode', filters.zipcode);
-      if (filters.area) params.append('area', filters.area);
+      if (location) params.append('location', location);
+      if (category) params.append('category', category);
       
-      const url = params.toString() ? `${API_BASE_URL}/events/search/filter?${params}` : `${API_BASE_URL}/events`;
+      const url = params.toString() ? `${API_BASE_URL}/events/search?${params}` : `${API_BASE_URL}/events`;
       const response = await fetch(url);
-      if (!response.ok) throw new Error('Failed to filter events');
+      if (!response.ok) throw new Error('Failed to search events');
       return await response.json();
     } catch (error) {
-      console.error('Error filtering events:', error);
+      console.error('Error searching events:', error);
       return [];
     }
   }

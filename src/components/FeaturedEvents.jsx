@@ -4,14 +4,10 @@ import { eventService } from '../services/api';
 function FeaturedEvents() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState({
-    city: '',
-    zipcode: '',
-    area: ''
-  });
-  const [availableCities, setAvailableCities] = useState([]);
-  const [availableZipcodes, setAvailableZipcodes] = useState([]);
-  const [availableAreas, setAvailableAreas] = useState([]);
+  const [searchLocation, setSearchLocation] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+
+  const categories = ['Social', 'Sports', 'Fitness', 'Gathering'];
 
   useEffect(() => {
     loadEvents();
@@ -105,40 +101,19 @@ function FeaturedEvents() {
     } else {
       setEvents(data);
     }
-    extractLocationData(data.length > 0 ? data : []);
     setLoading(false);
   };
 
-  const extractLocationData = (eventList) => {
-    const cities = [...new Set(eventList.map(e => e.city).filter(Boolean))].sort();
-    const zipcodes = [...new Set(eventList.map(e => e.zipcode).filter(Boolean))].sort();
-    const areas = [...new Set(eventList.map(e => e.area).filter(Boolean))].sort();
-    
-    setAvailableCities(cities);
-    setAvailableZipcodes(zipcodes);
-    setAvailableAreas(areas);
-  };
-
-  const handleFilterChange = (field, value) => {
-    setFilters(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const applyFilters = async () => {
+  const handleSearch = async () => {
     setLoading(true);
-    const filtered = await eventService.filterEvents(filters);
-    if (filtered.length === 0) {
-      setEvents([]);
-    } else {
-      setEvents(filtered);
-    }
+    const results = await eventService.searchEvents(searchLocation, selectedCategory);
+    setEvents(results.length > 0 ? results : []);
     setLoading(false);
   };
 
-  const clearFilters = () => {
-    setFilters({ city: '', zipcode: '', area: '' });
+  const handleClearFilters = () => {
+    setSearchLocation('');
+    setSelectedCategory('');
     loadEvents();
   };
 
@@ -163,74 +138,61 @@ function FeaturedEvents() {
           borderRadius: '8px',
           marginBottom: '30px'
         }}>
-          <h3 style={{ marginTop: 0, marginBottom: '15px' }}>Filter by Location</h3>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
             gap: '15px',
             marginBottom: '15px'
           }}>
             <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>City</label>
-              <select 
-                value={filters.city}
-                onChange={(e) => handleFilterChange('city', e.target.value)}
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
+                Search by City/Area/Zipcode
+              </label>
+              <input 
+                type="text"
+                placeholder="e.g., Portland, Downtown, 97201"
+                value={searchLocation}
+                onChange={(e) => setSearchLocation(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                 style={{
                   width: '100%',
-                  padding: '8px',
+                  padding: '10px',
                   borderRadius: '4px',
-                  border: '1px solid #ddd'
+                  border: '1px solid #ddd',
+                  fontSize: '14px',
+                  boxSizing: 'border-box'
                 }}
-              >
-                <option value="">All Cities</option>
-                {availableCities.map(city => (
-                  <option key={city} value={city}>{city}</option>
-                ))}
-              </select>
+              />
             </div>
             
             <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Zipcode</label>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
+                Category
+              </label>
               <select 
-                value={filters.zipcode}
-                onChange={(e) => handleFilterChange('zipcode', e.target.value)}
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
                 style={{
                   width: '100%',
-                  padding: '8px',
+                  padding: '10px',
                   borderRadius: '4px',
-                  border: '1px solid #ddd'
+                  border: '1px solid #ddd',
+                  fontSize: '14px',
+                  boxSizing: 'border-box'
                 }}
               >
-                <option value="">All Zipcodes</option>
-                {availableZipcodes.map(zipcode => (
-                  <option key={zipcode} value={zipcode}>{zipcode}</option>
-                ))}
-              </select>
-            </div>
-            
-            <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Area</label>
-              <select 
-                value={filters.area}
-                onChange={(e) => handleFilterChange('area', e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '8px',
-                  borderRadius: '4px',
-                  border: '1px solid #ddd'
-                }}
-              >
-                <option value="">All Areas</option>
-                {availableAreas.map(area => (
-                  <option key={area} value={area}>{area}</option>
-                ))}
+                <option value="">All Categories</option>
+                <option value="Social">Social Events</option>
+                <option value="Sports">Sports</option>
+                <option value="Fitness">Fitness</option>
+                <option value="Gathering">Gatherings</option>
               </select>
             </div>
           </div>
           
-          <div style={{ display: 'flex', gap: '10px' }}>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <button 
-              onClick={applyFilters}
+              onClick={handleSearch}
               style={{
                 padding: '10px 20px',
                 backgroundColor: '#007bff',
@@ -238,13 +200,14 @@ function FeaturedEvents() {
                 border: 'none',
                 borderRadius: '4px',
                 cursor: 'pointer',
-                fontSize: '16px'
+                fontSize: '16px',
+                fontWeight: 'bold'
               }}
             >
-              Apply Filters
+              Search
             </button>
             <button 
-              onClick={clearFilters}
+              onClick={handleClearFilters}
               style={{
                 padding: '10px 20px',
                 backgroundColor: '#6c757d',
@@ -261,7 +224,7 @@ function FeaturedEvents() {
         </div>
 
         {loading && <p style={{ textAlign: 'center' }}>Loading events...</p>}
-        {!loading && events.length === 0 && <p style={{ textAlign: 'center', fontSize: '16px', color: '#666' }}>No events found matching your filters.</p>}
+        {!loading && events.length === 0 && <p style={{ textAlign: 'center', fontSize: '16px', color: '#666' }}>No events found. Try adjusting your search.</p>}
         
         <div className="events-grid">
           {events.map((event) => (

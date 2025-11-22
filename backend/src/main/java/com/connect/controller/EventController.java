@@ -47,11 +47,10 @@ public class EventController {
         return ResponseEntity.ok(eventService.joinEvent(id));
     }
     
-    @GetMapping("/search/filter")
-    public ResponseEntity<List<Event>> filterEvents(
-            @RequestParam(required = false) String city,
-            @RequestParam(required = false) String zipcode,
-            @RequestParam(required = false) String area) {
-        return ResponseEntity.ok(eventService.filterEvents(city, zipcode, area));
+    @GetMapping("/search")
+    public ResponseEntity<List<Event>> searchEvents(
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) String category) {
+        return ResponseEntity.ok(eventService.searchAndFilterEvents(location, category));
     }
 }
