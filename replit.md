@@ -1,156 +1,89 @@
 # Connect - Community Events Platform
 
 ## Overview
-Connect is a community platform that helps people connect through real-world experiences. Users can discover and join local events, sports activities, fitness groups, and social gatherings to meet people in person and build meaningful connections.
 
-## Project Purpose
-The platform addresses the need for authentic in-person connections by facilitating:
-- Social events (coffee meetups, dinner parties, game nights)
-- Sports activities (basketball, soccer, tennis, hiking)
-- Fitness groups (running clubs, yoga sessions, cycling groups)
-- Creative gatherings (book clubs, art workshops, music jams)
+Connect is a community platform that facilitates real-world connections through local events, sports activities, fitness groups, and social gatherings. The application uses a modern full-stack architecture with a React frontend and Spring Boot backend, designed to help people discover and join in-person experiences in their communities.
 
-## Project Structure
+## User Preferences
 
-### Frontend (React - Port 5000)
-- `index.html` - Main HTML entry point
-- `src/` - React application source code
-  - `main.jsx` - React entry point
-  - `App.jsx` - Main application component
-  - `index.css` - Global styles
-  - `components/` - React components (Navbar, Hero, Categories, FeaturedEvents, HowItWorks, CTASection, Footer)
-  - `services/api.js` - API service layer
-- `vite.config.mjs` - Vite configuration
-- `package.json` - Dependencies
+Preferred communication style: Simple, everyday language.
 
-### Backend (Spring Boot - Port 3001)
-Located in `/backend` folder (ready to move to separate Git repo)
-- `build.gradle` - Gradle build configuration
-- `settings.gradle` - Gradle settings
-- `src/main/java/com/connect/` - Java source code
-  - `ConnectApplication.java` - Spring Boot main application
-  - `controller/EventController.java` - REST API endpoints
-  - `service/EventService.java` - Business logic
-  - `repository/EventRepository.java` - Database repository
-  - `model/Event.java` - Event entity
-  - `config/` - Configuration classes
-- `src/main/resources/` - Configuration and migrations
-  - `application.properties` - Spring Boot configuration
-  - `db/migration/V1__Create_events_table.sql` - Flyway database migration
-- `.gitignore` - Git ignore rules
-- `README.md` - Backend documentation
+## System Architecture
 
-## Technology Stack
+### Frontend Architecture
 
-### Frontend
-- **Framework**: React 18
-- **Build Tool**: Vite 5.x
-- **Runtime**: Node.js 20
-- **Styling**: CSS with CSS variables
+**Technology**: React 18 with Vite 5.x build tooling
 
-### Backend
-- **Framework**: Spring Boot 3.1.5
-- **Build Tool**: Gradle
-- **Database**: PostgreSQL
-- **Migrations**: Flyway
-- **Java Version**: 17+
+The frontend is a single-page application (SPA) built with React and served through Vite's development server on port 5000. The architecture follows a component-based structure:
 
-## Features
-1. **Hero Section** - Compelling value proposition
-2. **Category Cards** - 4 activity types (events, sports, fitness, gatherings)
-3. **Featured Events** - Dynamic event cards from database
-4. **How It Works** - Step-by-step guide
-5. **Navigation** - Smooth scrolling
-6. **Responsive Design** - Mobile-friendly
-7. **Join Event** - Users can join events from the UI, API updates attendance count
-8. **Database Integration** - Real data from PostgreSQL via Spring Boot API
-9. **Flyway Migrations** - Auto database setup with sample data
+- **Component Organization**: Modular UI components (Navbar, Hero, Categories, FeaturedEvents, HowItWorks, CTASection, Footer) for reusability and maintainability
+- **API Integration**: Centralized API service layer (`src/services/api.js`) that abstracts all backend communication
+- **Styling Approach**: CSS with CSS variables for consistent theming and easy customization, avoiding framework dependencies
+- **Build System**: Vite chosen for fast development server, hot module replacement, and optimized production builds
 
-## Configuration
+**Rationale**: React with Vite provides a modern, performant development experience with minimal configuration. The component-based architecture allows for easy feature additions and modifications.
 
-### Environment Variables
-Create `.env` file or set these variables:
-```
-VITE_API_URL=http://localhost:3001/api
-DATABASE_URL=jdbc:postgresql://localhost:5432/connect_db
-DB_USER=postgres
-DB_PASSWORD=password
-```
+### Backend Architecture
 
-### Frontend Dev Server
-- Runs on port 5000 with host 0.0.0.0
-- HMR configured for Replit proxy
+**Technology**: Spring Boot (Java) with RESTful API design
 
-### Backend API
-- Runs on port 3001
-- CORS enabled for frontend
-- All traffic goes through `/api` context path
+The backend runs on port 3001 and follows a layered architecture pattern:
 
-## Development
+- **Controller Layer** (`EventController.java`): Handles HTTP requests and responses for event-related operations
+- **Service Layer** (`EventService.java`): Contains business logic and orchestrates data operations
+- **Repository Layer** (`EventRepository.java`): Abstracts database access using Spring Data JPA
+- **Model Layer** (`Event.java`): Defines the event entity and data structure
 
-### Start Frontend
-```bash
-npm install
-npm run dev
-```
+**API Design**: RESTful endpoints following standard HTTP methods (GET, POST, PUT, DELETE) for CRUD operations, plus custom endpoint for joining events (POST `/events/{id}/join`)
 
-### Start Backend
-```bash
-cd backend
-./gradlew bootRun
-```
+**Rationale**: Spring Boot provides enterprise-grade features, dependency injection, and built-in support for database migrations. The layered architecture separates concerns and makes the codebase testable and maintainable.
 
-The frontend will call the Spring Boot API at `http://localhost:3001/api/events`
+### Data Storage
 
-## Database Setup
+**Database**: PostgreSQL
 
-PostgreSQL database with Flyway migrations. On first run:
-1. Connect to your PostgreSQL instance
-2. Create database: `CREATE DATABASE connect_db;`
-3. Spring Boot will automatically run Flyway migrations
-4. Sample data will be inserted by migration script
+**Schema Management**: Flyway for database migrations
 
-## API Endpoints
+The database schema is version-controlled through Flyway migrations located in `backend/src/main/resources/db/migration/`. Migrations run automatically on application startup, ensuring schema consistency across environments.
 
-All endpoints under `/api`:
-- `GET /events` - Get all events
-- `GET /events/{id}` - Get event by ID
-- `POST /events` - Create new event
-- `PUT /events/{id}` - Update event
-- `DELETE /events/{id}` - Delete event
-- `POST /events/{id}/join` - Join event (increments attendee count)
+**Migration Strategy**: V1 creates the initial events table with fields for event details, scheduling, capacity, and participant tracking
 
-## Repository Structure
+**Rationale**: PostgreSQL offers reliability, ACID compliance, and robust support for relational data. Flyway ensures reproducible database state and simplifies deployment across development, staging, and production environments.
 
-### Current Repo (Frontend)
-- React application
-- Calls backend API
-- Can be deployed as static site
+### Configuration Management
 
-### Backend Repo (Ready to separate)
-- `/backend` folder contains complete Spring Boot application
-- Can be cloned/pushed to separate GitHub repository
-- Has own build system (Gradle)
-- Own database migrations (Flyway)
-- Independent deployment
+**Environment Variables**: Database connection details (DATABASE_URL, DB_USER, DB_PASSWORD) are externalized for security and environment-specific configuration
 
-## Deployment
+**Frontend Configuration**: API base URL configurable via `VITE_API_URL` environment variable, defaulting to `http://localhost:3001/api` for local development
 
-### Frontend
-- Static build with `npm run build`
-- Deploy to Netlify, Vercel, or Replit hosting
+**Backend Configuration**: Spring Boot's `application.properties` manages server port, database connection, and Flyway settings
 
-### Backend
-- Build with `./gradlew build`
-- Run with `./gradlew bootRun` or jar file
-- Requires PostgreSQL connection
-- Flyway will auto-run migrations
+**Rationale**: Externalizing configuration enables the same codebase to run in multiple environments without code changes, following twelve-factor app principles.
 
-## Recent Changes (Nov 22, 2025)
-- Created React 18 application with modular components
-- Built complete Spring Boot backend with Gradle
-- Implemented Flyway database migrations with sample data
-- Created REST API with CRUD operations and join event feature
-- Integrated React frontend with backend API
-- Added environment configuration for database and API URL
-- Structured backend for easy separation to new Git repository
+## External Dependencies
+
+### Frontend Dependencies
+
+- **React 19.2.0**: Core UI library for building component-based interfaces
+- **React DOM 19.2.0**: React rendering for web browsers
+- **Vite 5.x**: Development server and build tool
+- **@vitejs/plugin-react 5.1.1**: Enables React Fast Refresh and JSX support in Vite
+- **CORS 2.8.5**: Cross-origin resource sharing middleware (Note: Listed but likely unused in frontend-only code)
+- **Express 5.1.0**: Web framework (Note: Listed but not actively used; may be legacy dependency)
+
+### Backend Dependencies (Gradle)
+
+- **Spring Boot**: Application framework (version specified in `build.gradle`)
+- **Spring Data JPA**: Database repository abstraction
+- **PostgreSQL JDBC Driver**: Database connectivity
+- **Flyway**: Database migration management
+
+### External Services
+
+**Database Service**: PostgreSQL database server (self-hosted or managed service like AWS RDS, Heroku Postgres)
+
+**Connection Details**: Configured via environment variables to support different database instances across environments
+
+### Deployment Considerations
+
+The application is structured to support repository separation: the backend folder is designed to be moved to a separate Git repository, enabling independent deployment and scaling of frontend and backend services.
