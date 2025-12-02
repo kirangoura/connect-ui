@@ -1,0 +1,29 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+section {
+  width: 100%;
+}
+
+section#events {
+  padding: 0;
+}
+
+section#sports {
+  padding: 0;
+}
+
+section#fitness {
+  padding: 0;
+}
+
+section#about {
+  padding: 0;
+}
