@@ -16,6 +16,45 @@ function CreateEvent({ isOpen, onClose, onEventCreated }) {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  const validateLocation = (location) => {
+    if (!location || location.trim().length < 2) {
+      return 'Location must be at least 2 characters long';
+    }
+    return '';
+  };
+
+  const validateCity = (city) => {
+    if (!city || city.trim().length < 2) {
+      return 'City must be at least 2 characters long';
+    }
+    if (!/^[a-zA-Z\s'-]+$/.test(city)) {
+      return 'City should only contain letters, spaces, hyphens, and apostrophes';
+    }
+    return '';
+  };
+
+  const validateArea = (area) => {
+    if (area && area.trim().length > 0) {
+      if (area.trim().length < 2) {
+        return 'Area must be at least 2 characters long';
+      }
+      if (!/^[a-zA-Z\s'-]+$/.test(area)) {
+        return 'Area should only contain letters, spaces, hyphens, and apostrophes';
+      }
+    }
+    return '';
+  };
+
+  const validateZipcode = (zipcode) => {
+    if (zipcode && zipcode.trim().length > 0) {
+      if (!/^\d{5}(-\d{4})?$/.test(zipcode.trim())) {
+        return 'Zipcode must be in format 12345 or 12345-6789';
+      }
+    }
+    return '';
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,11 +62,38 @@ function CreateEvent({ isOpen, onClose, onEventCreated }) {
       ...prev,
       [name]: value
     }));
+    // Clear field error when user starts typing
+    if (fieldErrors[name]) {
+      setFieldErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setFieldErrors({});
+    
+    // Validate location fields
+    const locationError = validateLocation(formData.location);
+    const cityError = validateCity(formData.city);
+    const areaError = validateArea(formData.area);
+    const zipcodeError = validateZipcode(formData.zipcode);
+
+    const newFieldErrors = {};
+    if (locationError) newFieldErrors.location = locationError;
+    if (cityError) newFieldErrors.city = cityError;
+    if (areaError) newFieldErrors.area = areaError;
+    if (zipcodeError) newFieldErrors.zipcode = zipcodeError;
+
+    if (Object.keys(newFieldErrors).length > 0) {
+      setFieldErrors(newFieldErrors);
+      setError('Please fix the errors below');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -147,7 +213,9 @@ function CreateEvent({ isOpen, onClose, onEventCreated }) {
               onChange={handleChange}
               required
               placeholder="e.g., Central Park"
+              className={fieldErrors.location ? 'input-error' : ''}
             />
+            {fieldErrors.location && <span className="field-error">{fieldErrors.location}</span>}
           </div>
 
           <div className="form-row">
@@ -161,7 +229,9 @@ function CreateEvent({ isOpen, onClose, onEventCreated }) {
                 onChange={handleChange}
                 required
                 placeholder="e.g., Portland"
+                className={fieldErrors.city ? 'input-error' : ''}
               />
+              {fieldErrors.city && <span className="field-error">{fieldErrors.city}</span>}
             </div>
 
             <div className="form-group">
@@ -173,7 +243,9 @@ function CreateEvent({ isOpen, onClose, onEventCreated }) {
                 value={formData.area}
                 onChange={handleChange}
                 placeholder="e.g., Downtown"
+                className={fieldErrors.area ? 'input-error' : ''}
               />
+              {fieldErrors.area && <span className="field-error">{fieldErrors.area}</span>}
             </div>
 
             <div className="form-group">
@@ -184,8 +256,10 @@ function CreateEvent({ isOpen, onClose, onEventCreated }) {
                 name="zipcode"
                 value={formData.zipcode}
                 onChange={handleChange}
-                placeholder="e.g., 97201"
+                placeholder="e.g., 97201 or 97201-1234"
+                className={fieldErrors.zipcode ? 'input-error' : ''}
               />
+              {fieldErrors.zipcode && <span className="field-error">{fieldErrors.zipcode}</span>}
             </div>
           </div>
 
