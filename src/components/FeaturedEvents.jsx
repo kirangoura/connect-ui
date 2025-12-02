@@ -1,12 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { eventService } from '../services/api';
 
-function FeaturedEvents() {
+function FeaturedEvents({ categoryFilter, onFilterApplied }) {
   const [events, setEvents] = useState([]);
   const [searchLocation, setSearchLocation] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Apply category filter from navbar
+  useEffect(() => {
+    if (categoryFilter) {
+      setSelectedCategory(categoryFilter);
+      const results = applyFilters(events, searchLocation, categoryFilter);
+      setFiltered(results);
+      onFilterApplied?.();
+    }
+  }, [categoryFilter]);
 
   // Apply filters to events
   const applyFilters = (allEvents, location, category) => {

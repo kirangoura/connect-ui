@@ -1,11 +1,21 @@
 import React, { useState } from 'react';
 
-function Navbar({ onCreateEvent }) {
+function Navbar({ onCreateEvent, onCategoryFilter }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const scrollToSection = (e, sectionId) => {
+  const scrollToEventsSection = (e) => {
     e.preventDefault();
-    const element = document.getElementById(sectionId);
+    const element = document.getElementById('events');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    setMenuOpen(false);
+  };
+
+  const handleCategoryClick = (e, category) => {
+    e.preventDefault();
+    onCategoryFilter?.(category);
+    const element = document.getElementById('events');
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -42,10 +52,10 @@ function Navbar({ onCreateEvent }) {
         </button>
 
         <div className={`nav-links ${menuOpen ? 'active' : ''}`}>
-          <a href="#events" onClick={(e) => scrollToSection(e, 'events')}>Events</a>
-          <a href="#sports" onClick={(e) => scrollToSection(e, 'sports')}>Sports</a>
-          <a href="#fitness" onClick={(e) => scrollToSection(e, 'fitness')}>Fitness</a>
-          <a href="#about" onClick={(e) => scrollToSection(e, 'about')}>About</a>
+          <a href="#events" onClick={(e) => handleCategoryClick(e, 'Events')}>Events</a>
+          <a href="#sports" onClick={(e) => handleCategoryClick(e, 'Sports')}>Sports</a>
+          <a href="#fitness" onClick={(e) => handleCategoryClick(e, 'Fitness')}>Fitness</a>
+          <a href="#about" onClick={(e) => scrollToEventsSection(e)}>About</a>
           <button className="btn-secondary" onClick={handleCreateEvent}>Create Event</button>
           <button className="btn-primary" onClick={handleJoinNow}>Join Now</button>
         </div>

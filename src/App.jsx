@@ -12,6 +12,7 @@ import './App.css';
 function App() {
   const [isCreateEventOpen, setIsCreateEventOpen] = useState(false);
   const [refreshEvents, setRefreshEvents] = useState(0);
+  const [categoryFilter, setCategoryFilter] = useState('');
 
   const handleCreateEventOpen = () => {
     setIsCreateEventOpen(true);
@@ -25,12 +26,16 @@ function App() {
     setRefreshEvents(prev => prev + 1);
   };
 
+  const handleCategoryFilter = (category) => {
+    setCategoryFilter(category);
+  };
+
   return (
     <div className="app">
-      <Navbar onCreateEvent={handleCreateEventOpen} />
+      <Navbar onCreateEvent={handleCreateEventOpen} onCategoryFilter={handleCategoryFilter} />
       <Hero onCreateEvent={handleCreateEventOpen} />
       <Categories />
-      <FeaturedEvents key={refreshEvents} />
+      <FeaturedEvents key={refreshEvents} categoryFilter={categoryFilter} onFilterApplied={() => setCategoryFilter('')} />
       <HowItWorks />
       <CTASection />
       <Footer />
