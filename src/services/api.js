@@ -68,14 +68,21 @@ export const eventService = {
 
   async joinEvent(id) {
     try {
+      console.log('Joining event:', id);
       const response = await fetchWithCORS(`${API_BASE_URL}/events/${id}/join`, {
         method: 'POST'
       });
-      if (!response.ok) throw new Error('Failed to join event');
-      return await response.json();
+      console.log('Join response status:', response.status);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to join event (${response.status}): ${errorText || response.statusText}`);
+      }
+      const data = await response.json();
+      console.log('Successfully joined event:', data);
+      return data;
     } catch (error) {
       console.error('Error joining event:', error);
-      throw error;
+      throw new Error(error.message || 'Failed to join event. Event may be full or no longer available.');
     }
   },
 

@@ -78,8 +78,33 @@ function FeaturedEvents() {
     setFiltered(events);
   };
 
-  const handleJoinEvent = (eventId) => {
-    alert(`Joined event #${eventId}!`);
+  const handleJoinEvent = async (eventId) => {
+    try {
+      const result = await eventService.joinEvent(eventId);
+      
+      // Update the attendee count in the local state
+      setEvents(prevEvents => 
+        prevEvents.map(event => 
+          event.id === eventId 
+            ? { ...event, attendees: (event.attendees || 0) + 1 }
+            : event
+        )
+      );
+      
+      // Also update filtered view
+      setFiltered(prevFiltered =>
+        prevFiltered.map(event =>
+          event.id === eventId
+            ? { ...event, attendees: (event.attendees || 0) + 1 }
+            : event
+        )
+      );
+      
+      alert('✅ Successfully joined the event!');
+    } catch (error) {
+      console.error('Error joining event:', error);
+      alert('❌ Could not join event: ' + error.message);
+    }
   };
 
   const getCategoryIcon = (category) => {
