@@ -113,14 +113,14 @@ function CreateEvent({ isOpen, onClose, onEventCreated }) {
             </div>
 
             <div className="form-group">
-              <label htmlFor="date">Date & Time</label>
+              <label htmlFor="date">Date & Time *</label>
               <input
-                type="text"
+                type="datetime-local"
                 id="date"
                 name="date"
                 value={formData.date}
                 onChange={handleChange}
-                placeholder="e.g., Saturday, 9:00 AM"
+                required
               />
             </div>
           </div>

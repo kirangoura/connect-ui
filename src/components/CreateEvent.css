@@ -88,6 +88,16 @@ form {
   transition: border-color 0.3s;
 }
 
+.form-group input[type="datetime-local"] {
+  cursor: pointer;
+  background-color: #f9fafb;
+}
+
+.form-group input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
