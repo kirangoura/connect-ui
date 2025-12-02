@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function Navbar() {
+function Navbar({ onCreateEvent }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const scrollToSection = (e, sectionId) => {
@@ -18,6 +18,11 @@ function Navbar() {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+    setMenuOpen(false);
+  };
+
+  const handleCreateEvent = () => {
+    onCreateEvent?.();
     setMenuOpen(false);
   };
 
@@ -41,6 +46,7 @@ function Navbar() {
           <a href="#sports" onClick={(e) => scrollToSection(e, 'sports')}>Sports</a>
           <a href="#fitness" onClick={(e) => scrollToSection(e, 'fitness')}>Fitness</a>
           <a href="#about" onClick={(e) => scrollToSection(e, 'about')}>About</a>
+          <button className="btn-secondary" onClick={handleCreateEvent}>Create Event</button>
           <button className="btn-primary" onClick={handleJoinNow}>Join Now</button>
         </div>
       </div>
