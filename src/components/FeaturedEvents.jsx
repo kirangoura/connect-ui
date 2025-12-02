@@ -8,6 +8,23 @@ function FeaturedEvents() {
   const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Apply filters to events
+  const applyFilters = (allEvents, location, category) => {
+    let results = allEvents;
+    if (location) {
+      const term = location.toLowerCase();
+      results = results.filter(e => 
+        e.city?.toLowerCase().includes(term) || 
+        e.area?.toLowerCase().includes(term) || 
+        e.zipcode?.includes(term)
+      );
+    }
+    if (category) {
+      results = results.filter(e => e.category === category);
+    }
+    return results;
+  };
+
   // Fetch events from backend API
   const fetchEvents = async () => {
     try {
@@ -15,7 +32,9 @@ function FeaturedEvents() {
       const data = await eventService.getAllEvents();
       console.log('Fetched events:', data.length);
       setEvents(data);
-      setFiltered(data);
+      // Reapply current filters to new events
+      const filtered = applyFilters(data, searchLocation, selectedCategory);
+      setFiltered(filtered);
     } catch (error) {
       console.error('Error fetching events:', error);
     } finally {
@@ -36,21 +55,10 @@ function FeaturedEvents() {
     }, 10000); // Check every 10 seconds
 
     return () => clearInterval(pollInterval);
-  }, []);
+  }, [searchLocation, selectedCategory]);
 
   const handleSearch = () => {
-    let results = events;
-    if (searchLocation) {
-      const term = searchLocation.toLowerCase();
-      results = results.filter(e => 
-        e.city?.toLowerCase().includes(term) || 
-        e.area?.toLowerCase().includes(term) || 
-        e.zipcode?.includes(term)
-      );
-    }
-    if (selectedCategory) {
-      results = results.filter(e => e.category === selectedCategory);
-    }
+    const results = applyFilters(events, searchLocation, selectedCategory);
     setFiltered(results);
   };
 
