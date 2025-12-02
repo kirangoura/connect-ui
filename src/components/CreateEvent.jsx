@@ -129,10 +129,11 @@ function CreateEvent({ isOpen, onClose, onEventCreated }) {
       onEventCreated?.(result);
       onClose();
     } catch (err) {
-      const errorMsg = err.message || 'Failed to create event. Please check that the backend API is running.';
+      const errorMsg = err.message || 'Failed to create event. The backend API may not be running.';
       setError(errorMsg);
-      console.error('Create event error:', err);
-      alert('❌ ' + errorMsg);
+      console.error('Create event error:', err.message);
+      console.error('Full error:', err);
+      alert('❌ Event Creation Failed\n\n' + errorMsg + '\n\nPlease ensure the backend API is running and try again.');
     } finally {
       setLoading(false);
     }

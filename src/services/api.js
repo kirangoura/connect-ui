@@ -47,15 +47,22 @@ export const eventService = {
 
   async createEvent(event) {
     try {
+      console.log('Creating event at:', `${API_BASE_URL}/events`);
       const response = await fetchWithCORS(`${API_BASE_URL}/events`, {
         method: 'POST',
         body: JSON.stringify(event)
       });
-      if (!response.ok) throw new Error('Failed to create event');
-      return await response.json();
+      console.log('Create response status:', response.status);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Backend error (${response.status}): ${errorText || response.statusText}`);
+      }
+      const data = await response.json();
+      console.log('Event created:', data);
+      return data;
     } catch (error) {
       console.error('Error creating event:', error);
-      throw error;
+      throw new Error(error.message || 'Failed to create event. Please check that the backend API is running.');
     }
   },
 
