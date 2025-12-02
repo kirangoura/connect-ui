@@ -43,7 +43,10 @@ function CreateEvent({ isOpen, onClose, onEventCreated }) {
         maxAttendees: parseInt(formData.maxAttendees)
       };
 
+      console.log('Creating event with data:', eventData);
       const result = await eventService.createEvent(eventData);
+      console.log('Event created successfully:', result);
+      
       setFormData({
         title: '',
         category: 'Events',
@@ -55,11 +58,15 @@ function CreateEvent({ isOpen, onClose, onEventCreated }) {
         zipcode: '',
         maxAttendees: 20
       });
+      
+      alert('✅ Event created successfully!');
       onEventCreated?.(result);
       onClose();
     } catch (err) {
-      setError(err.message || 'Failed to create event. Please try again.');
+      const errorMsg = err.message || 'Failed to create event. Please check that the backend API is running.';
+      setError(errorMsg);
       console.error('Create event error:', err);
+      alert('❌ ' + errorMsg);
     } finally {
       setLoading(false);
     }
