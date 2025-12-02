@@ -3,6 +3,7 @@ import CreateEvent from './components/CreateEvent';
 import Hero from './components/Hero';
 import Categories from './components/Categories';
 import FeaturedEvents from './components/FeaturedEvents';
+import About from './components/About';
 import HowItWorks from './components/HowItWorks';
 import CTASection from './components/CTASection';
 import Footer from './components/Footer';
@@ -36,6 +37,7 @@ function App() {
       <Hero onCreateEvent={handleCreateEventOpen} />
       <Categories />
       <FeaturedEvents key={refreshEvents} categoryFilter={categoryFilter} onFilterApplied={() => setCategoryFilter('')} />
+      <About />
       <HowItWorks />
       <CTASection />
       <Footer />

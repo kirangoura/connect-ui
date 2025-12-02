@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 function Navbar({ onCreateEvent, onCategoryFilter }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const scrollToEventsSection = (e) => {
+  const scrollToSection = (e, sectionId) => {
     e.preventDefault();
-    const element = document.getElementById('events');
+    const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -55,7 +55,7 @@ function Navbar({ onCreateEvent, onCategoryFilter }) {
           <a href="#events" onClick={(e) => handleCategoryClick(e, 'Events')}>Events</a>
           <a href="#sports" onClick={(e) => handleCategoryClick(e, 'Sports')}>Sports</a>
           <a href="#fitness" onClick={(e) => handleCategoryClick(e, 'Fitness')}>Fitness</a>
-          <a href="#about" onClick={(e) => scrollToEventsSection(e)}>About</a>
+          <a href="#about" onClick={(e) => scrollToSection(e, 'about')}>About</a>
           <button className="btn-secondary" onClick={handleCreateEvent}>Create Event</button>
           <button className="btn-primary" onClick={handleJoinNow}>Join Now</button>
         </div>
