@@ -28,16 +28,26 @@ function FeaturedEvents() {
   // Fetch events from backend API
   const fetchEvents = async () => {
     try {
-      setLoading(true);
       const data = await eventService.getAllEvents();
       console.log('Fetched events:', data.length);
-      setEvents(data);
-      // Reapply current filters to new events
-      const filtered = applyFilters(data, searchLocation, selectedCategory);
-      setFiltered(filtered);
+      
+      // Only update if data actually changed (compare lengths and timestamps)
+      setEvents(prevEvents => {
+        const dataHasChanged = prevEvents.length !== data.length || 
+          JSON.stringify(prevEvents) !== JSON.stringify(data);
+        
+        if (dataHasChanged) {
+          // Reapply current filters to new events
+          const filtered = applyFilters(data, searchLocation, selectedCategory);
+          setFiltered(filtered);
+          return data;
+        }
+        return prevEvents;
+      });
+      
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching events:', error);
-    } finally {
       setLoading(false);
     }
   };
