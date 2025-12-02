@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Hero() {
+function Hero({ onCreateEvent }) {
   const handleExplore = () => {
     const element = document.getElementById('events');
     if (element) {
@@ -9,7 +9,7 @@ function Hero() {
   };
 
   const handleCreateEvent = () => {
-    alert('Create Event - Coming Soon! You can create events by POSTing to /api/events');
+    onCreateEvent?.();
   };
 
   return (
