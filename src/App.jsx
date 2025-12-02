@@ -35,7 +35,7 @@ function App() {
     <div className="app">
       <Navbar onCreateEvent={handleCreateEventOpen} onCategoryFilter={handleCategoryFilter} />
       <Hero onCreateEvent={handleCreateEventOpen} />
-      <Categories />
+      <Categories onCategoryFilter={handleCategoryFilter} />
       <FeaturedEvents key={refreshEvents} categoryFilter={categoryFilter} onFilterApplied={() => setCategoryFilter('')} />
       <About />
       <HowItWorks />

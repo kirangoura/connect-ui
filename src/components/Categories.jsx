@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Categories() {
+function Categories({ onCategoryFilter }) {
   const categories = [
     {
       id: 1,
@@ -23,6 +23,10 @@ function Categories() {
   ];
 
   const handleCategoryClick = (categoryName) => {
+    // Apply the category filter
+    onCategoryFilter?.(categoryName);
+    
+    // Scroll to events section
     const element = document.getElementById('events');
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
