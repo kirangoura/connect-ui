@@ -1,18 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { eventService } from '../services/api';
 
 function FeaturedEvents() {
-  const [events] = useState([
-    { id: 1, title: 'Weekend Hiking Adventure', category: 'Sports', icon: '🥾', date: 'Saturday, 9:00 AM', location: 'Mountain Trail Park', city: 'Portland', zipcode: '97201', area: 'Downtown', attendees: 12, maxAttendees: 15 },
-    { id: 2, title: 'Morning Yoga in the Park', category: 'Fitness', icon: '🧘', date: 'Sunday, 7:00 AM', location: 'Central Park', city: 'Portland', zipcode: '97210', area: 'Central', attendees: 8, maxAttendees: 20 },
-    { id: 3, title: 'Coffee & Conversations', category: 'Events', icon: '☕', date: 'Friday, 5:00 PM', location: 'Downtown Cafe', city: 'Portland', zipcode: '97215', area: 'Southeast', attendees: 6, maxAttendees: 10 },
-    { id: 4, title: 'Basketball Pickup Game', category: 'Sports', icon: '🏀', date: 'Wednesday, 6:00 PM', location: 'Community Center', city: 'Portland', zipcode: '97201', area: 'Downtown', attendees: 10, maxAttendees: 12 },
-    { id: 5, title: 'Running Club Meetup', category: 'Fitness', icon: '🏃', date: 'Tuesday, 6:30 AM', location: 'Riverside Trail', city: 'Portland', zipcode: '97202', area: 'Southwest', attendees: 15, maxAttendees: 25 },
-    { id: 6, title: 'Tech Meetup Night', category: 'Events', icon: '💻', date: 'Thursday, 7:00 PM', location: 'Tech Hub Downtown', city: 'Portland', zipcode: '97201', area: 'Downtown', attendees: 20, maxAttendees: 50 },
-  ]);
-
+  const [events, setEvents] = useState([]);
   const [searchLocation, setSearchLocation] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [filtered, setFiltered] = useState(events);
+  const [filtered, setFiltered] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch events from backend API
+  const fetchEvents = async () => {
+    try {
+      setLoading(true);
+      const data = await eventService.getAllEvents();
+      console.log('Fetched events:', data.length);
+      setEvents(data);
+      setFiltered(data);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch events on component mount
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  // Set up polling to check for new events every 10 seconds
+  useEffect(() => {
+    const pollInterval = setInterval(() => {
+      console.log('Polling for new events...');
+      fetchEvents();
+    }, 10000); // Check every 10 seconds
+
+    return () => clearInterval(pollInterval);
+  }, []);
 
   const handleSearch = () => {
     let results = events;
@@ -38,6 +62,15 @@ function FeaturedEvents() {
 
   const handleJoinEvent = (eventId) => {
     alert(`Joined event #${eventId}!`);
+  };
+
+  const getCategoryIcon = (category) => {
+    const icons = {
+      'Sports': '⚽',
+      'Fitness': '🏃',
+      'Events': '🎉'
+    };
+    return icons[category] || '🎯';
   };
 
   return (
@@ -86,26 +119,28 @@ function FeaturedEvents() {
           </button>
         </div>
 
-        {filtered.length === 0 && <p style={{ textAlign: 'center', fontSize: '16px', color: '#666' }}>No events found. Try adjusting your search.</p>}
+        {loading && <p style={{ textAlign: 'center', fontSize: '16px', color: '#666' }}>Loading events...</p>}
+        {!loading && filtered.length === 0 && <p style={{ textAlign: 'center', fontSize: '16px', color: '#666' }}>No events found. Try adjusting your search.</p>}
 
         <div className="events-grid">
           {filtered.map((event) => (
             <div key={event.id} className="event-card">
-              <div className="event-image">{event.icon}</div>
+              <div className="event-image">{event.icon || getCategoryIcon(event.category)}</div>
               <div className="event-content">
                 <span className="event-badge">{event.category}</span>
                 <h3>{event.title}</h3>
+                {event.description && <p className="event-detail">{event.description}</p>}
                 <p className="event-detail">📍 {event.location}</p>
-                <p className="event-detail">🏙️ {event.city}, {event.zipcode}</p>
+                <p className="event-detail">🏙️ {event.city}{event.area ? `, ${event.area}` : ''} {event.zipcode}</p>
                 <p className="event-detail">🕐 {event.date}</p>
-                <p className="event-detail">👥 {event.attendees}/{event.maxAttendees} attending</p>
+                <p className="event-detail">👥 {event.attendees || 0}/{event.maxAttendees} attending</p>
                 <button 
                   className="btn-primary" 
                   onClick={() => handleJoinEvent(event.id)}
-                  disabled={event.attendees >= event.maxAttendees}
-                  style={{ opacity: event.attendees >= event.maxAttendees ? 0.5 : 1, cursor: event.attendees >= event.maxAttendees ? 'not-allowed' : 'pointer' }}
+                  disabled={(event.attendees || 0) >= event.maxAttendees}
+                  style={{ opacity: (event.attendees || 0) >= event.maxAttendees ? 0.5 : 1, cursor: (event.attendees || 0) >= event.maxAttendees ? 'not-allowed' : 'pointer' }}
                 >
-                  {event.attendees >= event.maxAttendees ? 'Event Full' : 'Join Event'}
+                  {(event.attendees || 0) >= event.maxAttendees ? 'Event Full' : 'Join Event'}
                 </button>
               </div>
             </div>
