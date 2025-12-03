@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { eventService } from '../services/api';
 
 function FeaturedEvents({ categoryFilter, onFilterApplied }) {
@@ -7,6 +7,19 @@ function FeaturedEvents({ categoryFilter, onFilterApplied }) {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+  const [locationSuggestions, setLocationSuggestions] = useState([]);
+
+  // Extract unique locations from events for autocomplete
+  const uniqueLocations = useMemo(() => {
+    const locations = new Set();
+    events.forEach(event => {
+      if (event.city) locations.add(event.city);
+      if (event.area) locations.add(event.area);
+      if (event.zipcode) locations.add(event.zipcode);
+    });
+    return Array.from(locations).sort();
+  }, [events]);
 
   // Apply category filter from navbar
   useEffect(() => {
@@ -41,13 +54,11 @@ function FeaturedEvents({ categoryFilter, onFilterApplied }) {
       const data = await eventService.getAllEvents();
       console.log('Fetched events:', data.length);
       
-      // Only update if data actually changed (compare lengths and timestamps)
       setEvents(prevEvents => {
         const dataHasChanged = prevEvents.length !== data.length || 
           JSON.stringify(prevEvents) !== JSON.stringify(data);
         
         if (dataHasChanged) {
-          // Reapply current filters to new events
           const filtered = applyFilters(data, searchLocation, selectedCategory);
           setFiltered(filtered);
           return data;
@@ -72,12 +83,38 @@ function FeaturedEvents({ categoryFilter, onFilterApplied }) {
     const pollInterval = setInterval(() => {
       console.log('Polling for new events...');
       fetchEvents();
-    }, 10000); // Check every 10 seconds
+    }, 10000);
 
     return () => clearInterval(pollInterval);
   }, [searchLocation, selectedCategory]);
 
+  // Filter location suggestions as user types
+  const handleLocationChange = (e) => {
+    const value = e.target.value;
+    setSearchLocation(value);
+    
+    if (value.length > 0) {
+      const filtered = uniqueLocations
+        .filter(loc => loc.toLowerCase().includes(value.toLowerCase()))
+        .slice(0, 6);
+      setLocationSuggestions(filtered);
+      setShowLocationSuggestions(filtered.length > 0);
+    } else {
+      setLocationSuggestions([]);
+      setShowLocationSuggestions(false);
+    }
+  };
+
+  const handleSelectLocation = (location) => {
+    setSearchLocation(location);
+    setShowLocationSuggestions(false);
+    // Auto-search when selecting a suggestion
+    const results = applyFilters(events, location, selectedCategory);
+    setFiltered(results);
+  };
+
   const handleSearch = () => {
+    setShowLocationSuggestions(false);
     const results = applyFilters(events, searchLocation, selectedCategory);
     setFiltered(results);
   };
@@ -86,13 +123,13 @@ function FeaturedEvents({ categoryFilter, onFilterApplied }) {
     setSearchLocation('');
     setSelectedCategory('');
     setFiltered(events);
+    setShowLocationSuggestions(false);
   };
 
   const handleJoinEvent = async (eventId) => {
     try {
       const result = await eventService.joinEvent(eventId);
       
-      // Update the attendee count in the local state
       setEvents(prevEvents => 
         prevEvents.map(event => 
           event.id === eventId 
@@ -101,7 +138,6 @@ function FeaturedEvents({ categoryFilter, onFilterApplied }) {
         )
       );
       
-      // Also update filtered view
       setFiltered(prevFiltered =>
         prevFiltered.map(event =>
           event.id === eventId
@@ -110,10 +146,10 @@ function FeaturedEvents({ categoryFilter, onFilterApplied }) {
         )
       );
       
-      alert('✅ Successfully joined the event!');
+      alert('Successfully joined the event!');
     } catch (error) {
       console.error('Error joining event:', error);
-      alert('❌ Could not join event: ' + error.message);
+      alert('Could not join event: ' + error.message);
     }
   };
 
@@ -131,25 +167,37 @@ function FeaturedEvents({ categoryFilter, onFilterApplied }) {
       <div className="container">
         <h2 className="section-title">Happening This Week</h2>
         
-        <div style={{ backgroundColor: '#f5f5f5', padding: '20px', borderRadius: '8px', marginBottom: '30px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '15px', marginBottom: '15px' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Search by Location</label>
-              <input 
-                type="text" 
-                placeholder="e.g., Portland, Downtown, 97201" 
-                value={searchLocation} 
-                onChange={(e) => setSearchLocation(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ddd' }} 
-              />
+        <div className="search-filters">
+          <div className="filter-grid">
+            <div className="filter-group">
+              <label>Search by Location</label>
+              <div className="location-autocomplete">
+                <input 
+                  type="text" 
+                  placeholder="e.g., Portland, Downtown, 97201" 
+                  value={searchLocation} 
+                  onChange={handleLocationChange}
+                  onFocus={() => searchLocation.length > 0 && locationSuggestions.length > 0 && setShowLocationSuggestions(true)}
+                  onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                  autoComplete="off"
+                />
+                {showLocationSuggestions && locationSuggestions.length > 0 && (
+                  <ul className="location-suggestions">
+                    {locationSuggestions.map((loc, idx) => (
+                      <li key={idx} onClick={() => handleSelectLocation(loc)}>
+                        {loc}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Category</label>
+            <div className="filter-group">
+              <label>Category</label>
               <select 
                 value={selectedCategory} 
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ddd' }}
               >
                 <option value="">All Categories</option>
                 <option value="Events">Events</option>
@@ -158,22 +206,18 @@ function FeaturedEvents({ categoryFilter, onFilterApplied }) {
               </select>
             </div>
           </div>
-          <button 
-            onClick={handleSearch} 
-            style={{ padding: '10px 20px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
-          >
-            Search
-          </button>
-          <button 
-            onClick={handleClearFilters} 
-            style={{ padding: '10px 20px', marginLeft: '10px', backgroundColor: '#6c757d', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-          >
-            Clear Filters
-          </button>
+          <div className="filter-actions">
+            <button onClick={handleSearch} className="btn-search">
+              Search
+            </button>
+            <button onClick={handleClearFilters} className="btn-clear">
+              Clear Filters
+            </button>
+          </div>
         </div>
 
-        {loading && <p style={{ textAlign: 'center', fontSize: '16px', color: '#666' }}>Loading events...</p>}
-        {!loading && filtered.length === 0 && <p style={{ textAlign: 'center', fontSize: '16px', color: '#666' }}>No events found. Try adjusting your search.</p>}
+        {loading && <p className="status-message">Loading events...</p>}
+        {!loading && filtered.length === 0 && <p className="status-message">No events found. Try adjusting your search.</p>}
 
         <div className="events-grid">
           {filtered.map((event) => (
