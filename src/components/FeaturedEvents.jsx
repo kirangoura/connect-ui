@@ -197,7 +197,12 @@ function FeaturedEvents({ categoryFilter, onFilterApplied }) {
               <label>Category</label>
               <select 
                 value={selectedCategory} 
-                onChange={(e) => setSelectedCategory(e.target.value)}
+                onChange={(e) => {
+                  const newCategory = e.target.value;
+                  setSelectedCategory(newCategory);
+                  const results = applyFilters(events, searchLocation, newCategory);
+                  setFiltered(results);
+                }}
               >
                 <option value="">All Categories</option>
                 <option value="Events">Events</option>
