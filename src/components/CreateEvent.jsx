@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { eventService } from '../services/api';
 import './CreateEvent.css';
 
@@ -17,6 +17,43 @@ function CreateEvent({ isOpen, onClose, onEventCreated }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
+  const [suggestions, setSuggestions] = useState({
+    city: [],
+    area: [],
+    zipcode: []
+  });
+  const [existingData, setExistingData] = useState({
+    cities: [],
+    areas: [],
+    zipcodes: []
+  });
+  const [showSuggestions, setShowSuggestions] = useState({
+    city: false,
+    area: false,
+    zipcode: false
+  });
+
+  // Fetch existing events to extract unique locations
+  useEffect(() => {
+    const fetchExistingLocations = async () => {
+      try {
+        const response = await fetch(import.meta.env.VITE_API_URL + '/events');
+        if (response.ok) {
+          const events = await response.json();
+          const cities = [...new Set(events.map(e => e.city).filter(Boolean))].sort();
+          const areas = [...new Set(events.map(e => e.area).filter(Boolean))].sort();
+          const zipcodes = [...new Set(events.map(e => e.zipcode).filter(Boolean))].sort();
+          setExistingData({ cities, areas, zipcodes });
+        }
+      } catch (err) {
+        console.log('Could not fetch existing locations for autocomplete');
+      }
+    };
+    
+    if (isOpen) {
+      fetchExistingLocations();
+    }
+  }, [isOpen]);
 
   const validateLocation = (location) => {
     if (!location || location.trim().length < 2) {
@@ -69,6 +106,40 @@ function CreateEvent({ isOpen, onClose, onEventCreated }) {
         [name]: ''
       }));
     }
+
+    // Filter suggestions for autocomplete fields
+    if (name === 'city' && value.length > 0) {
+      const filtered = existingData.cities
+        .filter(c => c.toLowerCase().includes(value.toLowerCase()))
+        .slice(0, 5);
+      setSuggestions(prev => ({ ...prev, city: filtered }));
+      setShowSuggestions(prev => ({ ...prev, city: filtered.length > 0 }));
+    } else if (name === 'area' && value.length > 0) {
+      const filtered = existingData.areas
+        .filter(a => a.toLowerCase().includes(value.toLowerCase()))
+        .slice(0, 5);
+      setSuggestions(prev => ({ ...prev, area: filtered }));
+      setShowSuggestions(prev => ({ ...prev, area: filtered.length > 0 }));
+    } else if (name === 'zipcode' && value.length > 0) {
+      const filtered = existingData.zipcodes
+        .filter(z => z.includes(value))
+        .slice(0, 5);
+      setSuggestions(prev => ({ ...prev, zipcode: filtered }));
+      setShowSuggestions(prev => ({ ...prev, zipcode: filtered.length > 0 }));
+    } else {
+      setShowSuggestions(prev => ({ ...prev, [name]: false }));
+    }
+  };
+
+  const handleSelectSuggestion = (field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    setShowSuggestions(prev => ({
+      ...prev,
+      [field]: false
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -222,44 +293,83 @@ function CreateEvent({ isOpen, onClose, onEventCreated }) {
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="city">City *</label>
-              <input
-                type="text"
-                id="city"
-                name="city"
-                value={formData.city}
-                onChange={handleChange}
-                required
-                placeholder="e.g., Portland"
-                className={fieldErrors.city ? 'input-error' : ''}
-              />
+              <div className="autocomplete-wrapper">
+                <input
+                  type="text"
+                  id="city"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleChange}
+                  onFocus={() => formData.city.length > 0 && setShowSuggestions(prev => ({ ...prev, city: true }))}
+                  required
+                  placeholder="e.g., Portland"
+                  className={fieldErrors.city ? 'input-error' : ''}
+                  autoComplete="off"
+                />
+                {showSuggestions.city && suggestions.city.length > 0 && (
+                  <ul className="suggestions-list">
+                    {suggestions.city.map((city, idx) => (
+                      <li key={idx} onClick={() => handleSelectSuggestion('city', city)}>
+                        {city}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
               {fieldErrors.city && <span className="field-error">{fieldErrors.city}</span>}
             </div>
 
             <div className="form-group">
               <label htmlFor="area">Area</label>
-              <input
-                type="text"
-                id="area"
-                name="area"
-                value={formData.area}
-                onChange={handleChange}
-                placeholder="e.g., Downtown"
-                className={fieldErrors.area ? 'input-error' : ''}
-              />
+              <div className="autocomplete-wrapper">
+                <input
+                  type="text"
+                  id="area"
+                  name="area"
+                  value={formData.area}
+                  onChange={handleChange}
+                  onFocus={() => formData.area.length > 0 && setShowSuggestions(prev => ({ ...prev, area: true }))}
+                  placeholder="e.g., Downtown"
+                  className={fieldErrors.area ? 'input-error' : ''}
+                  autoComplete="off"
+                />
+                {showSuggestions.area && suggestions.area.length > 0 && (
+                  <ul className="suggestions-list">
+                    {suggestions.area.map((area, idx) => (
+                      <li key={idx} onClick={() => handleSelectSuggestion('area', area)}>
+                        {area}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
               {fieldErrors.area && <span className="field-error">{fieldErrors.area}</span>}
             </div>
 
             <div className="form-group">
               <label htmlFor="zipcode">Zipcode</label>
-              <input
-                type="text"
-                id="zipcode"
-                name="zipcode"
-                value={formData.zipcode}
-                onChange={handleChange}
-                placeholder="e.g., 97201 or 97201-1234"
-                className={fieldErrors.zipcode ? 'input-error' : ''}
-              />
+              <div className="autocomplete-wrapper">
+                <input
+                  type="text"
+                  id="zipcode"
+                  name="zipcode"
+                  value={formData.zipcode}
+                  onChange={handleChange}
+                  onFocus={() => formData.zipcode.length > 0 && setShowSuggestions(prev => ({ ...prev, zipcode: true }))}
+                  placeholder="e.g., 97201 or 97201-1234"
+                  className={fieldErrors.zipcode ? 'input-error' : ''}
+                  autoComplete="off"
+                />
+                {showSuggestions.zipcode && suggestions.zipcode.length > 0 && (
+                  <ul className="suggestions-list">
+                    {suggestions.zipcode.map((zipcode, idx) => (
+                      <li key={idx} onClick={() => handleSelectSuggestion('zipcode', zipcode)}>
+                        {zipcode}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
               {fieldErrors.zipcode && <span className="field-error">{fieldErrors.zipcode}</span>}
             </div>
           </div>
