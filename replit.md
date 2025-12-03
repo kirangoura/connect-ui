@@ -102,10 +102,15 @@ The address autocomplete uses a provider pattern for easy API switching:
 - `src/services/addressProviders/googlePlacesProvider.js` - Google Maps Places API provider (ready to use)
 - `src/services/addressProviders/index.js` - Factory that selects provider based on env vars
 
-**To switch to Google Maps API:**
-1. Set environment variable: `VITE_ADDRESS_PROVIDER=google`
-2. Set API key: `VITE_GOOGLE_PLACES_API_KEY=your_api_key`
-3. The app will automatically use Google Places API instead of Photon
+**How to Switch to Google Maps API:**
+When you're ready to use Google Maps, just set 2 environment variables:
+
+```
+VITE_ADDRESS_PROVIDER=google
+VITE_GOOGLE_PLACES_API_KEY=your_google_api_key_here
+```
+
+The app will automatically use Google Places API instead of Photon.
 
 ### Event Display
 - Grid layout with event cards showing icons, titles, locations, capacity
