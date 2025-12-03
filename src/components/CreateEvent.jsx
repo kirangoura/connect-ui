@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { eventService } from '../services/api';
+import { searchAddresses, cancelSearch } from '../services/addressService';
 import './CreateEvent.css';
 
 function CreateEvent({ isOpen, onClose, onEventCreated }) {
@@ -17,43 +18,9 @@ function CreateEvent({ isOpen, onClose, onEventCreated }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
-  const [suggestions, setSuggestions] = useState({
-    city: [],
-    area: [],
-    zipcode: []
-  });
-  const [existingData, setExistingData] = useState({
-    cities: [],
-    areas: [],
-    zipcodes: []
-  });
-  const [showSuggestions, setShowSuggestions] = useState({
-    city: false,
-    area: false,
-    zipcode: false
-  });
-
-  // Fetch existing events to extract unique locations
-  useEffect(() => {
-    const fetchExistingLocations = async () => {
-      try {
-        const response = await fetch(import.meta.env.VITE_API_URL + '/events');
-        if (response.ok) {
-          const events = await response.json();
-          const cities = [...new Set(events.map(e => e.city).filter(Boolean))].sort();
-          const areas = [...new Set(events.map(e => e.area).filter(Boolean))].sort();
-          const zipcodes = [...new Set(events.map(e => e.zipcode).filter(Boolean))].sort();
-          setExistingData({ cities, areas, zipcodes });
-        }
-      } catch (err) {
-        console.log('Could not fetch existing locations for autocomplete');
-      }
-    };
-    
-    if (isOpen) {
-      fetchExistingLocations();
-    }
-  }, [isOpen]);
+  const [addressSuggestions, setAddressSuggestions] = useState([]);
+  const [showAddressSuggestions, setShowAddressSuggestions] = useState(false);
+  const [isSearchingAddress, setIsSearchingAddress] = useState(false);
 
   const validateLocation = (location) => {
     if (!location || location.trim().length < 2) {
@@ -99,47 +66,55 @@ function CreateEvent({ isOpen, onClose, onEventCreated }) {
       ...prev,
       [name]: value
     }));
-    // Clear field error when user starts typing
     if (fieldErrors[name]) {
       setFieldErrors(prev => ({
         ...prev,
         [name]: ''
       }));
     }
+  };
 
-    // Filter suggestions for autocomplete fields
-    if (name === 'city' && value.length > 0) {
-      const filtered = existingData.cities
-        .filter(c => c.toLowerCase().includes(value.toLowerCase()))
-        .slice(0, 5);
-      setSuggestions(prev => ({ ...prev, city: filtered }));
-      setShowSuggestions(prev => ({ ...prev, city: filtered.length > 0 }));
-    } else if (name === 'area' && value.length > 0) {
-      const filtered = existingData.areas
-        .filter(a => a.toLowerCase().includes(value.toLowerCase()))
-        .slice(0, 5);
-      setSuggestions(prev => ({ ...prev, area: filtered }));
-      setShowSuggestions(prev => ({ ...prev, area: filtered.length > 0 }));
-    } else if (name === 'zipcode' && value.length > 0) {
-      const filtered = existingData.zipcodes
-        .filter(z => z.includes(value))
-        .slice(0, 5);
-      setSuggestions(prev => ({ ...prev, zipcode: filtered }));
-      setShowSuggestions(prev => ({ ...prev, zipcode: filtered.length > 0 }));
+  const handleLocationChange = async (e) => {
+    const value = e.target.value;
+    setFormData(prev => ({
+      ...prev,
+      location: value
+    }));
+    
+    if (fieldErrors.location) {
+      setFieldErrors(prev => ({
+        ...prev,
+        location: ''
+      }));
+    }
+
+    if (value.length >= 3) {
+      setIsSearchingAddress(true);
+      try {
+        const suggestions = await searchAddresses(value);
+        setAddressSuggestions(suggestions);
+        setShowAddressSuggestions(suggestions.length > 0);
+      } catch (err) {
+        console.error('Address search error:', err);
+      } finally {
+        setIsSearchingAddress(false);
+      }
     } else {
-      setShowSuggestions(prev => ({ ...prev, [name]: false }));
+      setAddressSuggestions([]);
+      setShowAddressSuggestions(false);
     }
   };
 
-  const handleSelectSuggestion = (field, value) => {
+  const handleSelectAddress = (address) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      location: address.location || address.label,
+      city: address.city || prev.city,
+      area: address.area || prev.area,
+      zipcode: address.zipcode || prev.zipcode
     }));
-    setShowSuggestions(prev => ({
-      ...prev,
-      [field]: false
-    }));
+    setShowAddressSuggestions(false);
+    setAddressSuggestions([]);
   };
 
   const handleSubmit = async (e) => {
@@ -147,7 +122,6 @@ function CreateEvent({ isOpen, onClose, onEventCreated }) {
     setError('');
     setFieldErrors({});
     
-    // Validate location fields
     const locationError = validateLocation(formData.location);
     const cityError = validateCity(formData.city);
     const areaError = validateArea(formData.area);
@@ -196,7 +170,7 @@ function CreateEvent({ isOpen, onClose, onEventCreated }) {
         maxAttendees: 20
       });
       
-      alert('✅ Event created successfully!');
+      alert('Event created successfully!');
       onEventCreated?.(result);
       onClose();
     } catch (err) {
@@ -204,20 +178,27 @@ function CreateEvent({ isOpen, onClose, onEventCreated }) {
       setError(errorMsg);
       console.error('Create event error:', err.message);
       console.error('Full error:', err);
-      alert('❌ Event Creation Failed\n\n' + errorMsg + '\n\nPlease ensure the backend API is running and try again.');
+      alert('Event Creation Failed\n\n' + errorMsg + '\n\nPlease ensure the backend API is running and try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  const handleCloseModal = () => {
+    cancelSearch();
+    setShowAddressSuggestions(false);
+    setAddressSuggestions([]);
+    onClose();
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-overlay" onClick={handleCloseModal}>
       <div className="modal-content" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <h2>Create New Event</h2>
-          <button className="modal-close" onClick={onClose}>×</button>
+          <button className="modal-close" onClick={handleCloseModal}>×</button>
         </div>
 
         <form onSubmit={handleSubmit}>
@@ -276,100 +257,88 @@ function CreateEvent({ isOpen, onClose, onEventCreated }) {
           </div>
 
           <div className="form-group">
-            <label htmlFor="location">Location *</label>
-            <input
-              type="text"
-              id="location"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              required
-              placeholder="e.g., Central Park"
-              className={fieldErrors.location ? 'input-error' : ''}
-            />
+            <label htmlFor="location">Location * <span className="label-hint">(Start typing for suggestions)</span></label>
+            <div className="autocomplete-wrapper">
+              <input
+                type="text"
+                id="location"
+                name="location"
+                value={formData.location}
+                onChange={handleLocationChange}
+                onBlur={() => setTimeout(() => setShowAddressSuggestions(false), 200)}
+                onFocus={() => addressSuggestions.length > 0 && setShowAddressSuggestions(true)}
+                required
+                placeholder="e.g., 123 Main Street, Portland"
+                className={fieldErrors.location ? 'input-error' : ''}
+                autoComplete="off"
+              />
+              {isSearchingAddress && (
+                <div className="search-indicator">Searching...</div>
+              )}
+              {showAddressSuggestions && addressSuggestions.length > 0 && (
+                <ul className="suggestions-list address-suggestions">
+                  {addressSuggestions.map((address) => (
+                    <li 
+                      key={address.id} 
+                      onClick={() => handleSelectAddress(address)}
+                      className="address-suggestion-item"
+                    >
+                      <div className="suggestion-main">{address.label}</div>
+                      {(address.city || address.zipcode) && (
+                        <div className="suggestion-details">
+                          {[address.city, address.state, address.zipcode].filter(Boolean).join(', ')}
+                        </div>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
             {fieldErrors.location && <span className="field-error">{fieldErrors.location}</span>}
+            <span className="field-help">Select an address to auto-fill city, area, and zipcode, or enter manually below</span>
           </div>
 
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="city">City *</label>
-              <div className="autocomplete-wrapper">
-                <input
-                  type="text"
-                  id="city"
-                  name="city"
-                  value={formData.city}
-                  onChange={handleChange}
-                  onFocus={() => formData.city.length > 0 && setShowSuggestions(prev => ({ ...prev, city: true }))}
-                  required
-                  placeholder="e.g., Portland"
-                  className={fieldErrors.city ? 'input-error' : ''}
-                  autoComplete="off"
-                />
-                {showSuggestions.city && suggestions.city.length > 0 && (
-                  <ul className="suggestions-list">
-                    {suggestions.city.map((city, idx) => (
-                      <li key={idx} onClick={() => handleSelectSuggestion('city', city)}>
-                        {city}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
+              <input
+                type="text"
+                id="city"
+                name="city"
+                value={formData.city}
+                onChange={handleChange}
+                required
+                placeholder="e.g., Portland"
+                className={fieldErrors.city ? 'input-error' : ''}
+              />
               {fieldErrors.city && <span className="field-error">{fieldErrors.city}</span>}
             </div>
 
             <div className="form-group">
               <label htmlFor="area">Area</label>
-              <div className="autocomplete-wrapper">
-                <input
-                  type="text"
-                  id="area"
-                  name="area"
-                  value={formData.area}
-                  onChange={handleChange}
-                  onFocus={() => formData.area.length > 0 && setShowSuggestions(prev => ({ ...prev, area: true }))}
-                  placeholder="e.g., Downtown"
-                  className={fieldErrors.area ? 'input-error' : ''}
-                  autoComplete="off"
-                />
-                {showSuggestions.area && suggestions.area.length > 0 && (
-                  <ul className="suggestions-list">
-                    {suggestions.area.map((area, idx) => (
-                      <li key={idx} onClick={() => handleSelectSuggestion('area', area)}>
-                        {area}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
+              <input
+                type="text"
+                id="area"
+                name="area"
+                value={formData.area}
+                onChange={handleChange}
+                placeholder="e.g., Downtown"
+                className={fieldErrors.area ? 'input-error' : ''}
+              />
               {fieldErrors.area && <span className="field-error">{fieldErrors.area}</span>}
             </div>
 
             <div className="form-group">
               <label htmlFor="zipcode">Zipcode</label>
-              <div className="autocomplete-wrapper">
-                <input
-                  type="text"
-                  id="zipcode"
-                  name="zipcode"
-                  value={formData.zipcode}
-                  onChange={handleChange}
-                  onFocus={() => formData.zipcode.length > 0 && setShowSuggestions(prev => ({ ...prev, zipcode: true }))}
-                  placeholder="e.g., 97201 or 97201-1234"
-                  className={fieldErrors.zipcode ? 'input-error' : ''}
-                  autoComplete="off"
-                />
-                {showSuggestions.zipcode && suggestions.zipcode.length > 0 && (
-                  <ul className="suggestions-list">
-                    {suggestions.zipcode.map((zipcode, idx) => (
-                      <li key={idx} onClick={() => handleSelectSuggestion('zipcode', zipcode)}>
-                        {zipcode}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
+              <input
+                type="text"
+                id="zipcode"
+                name="zipcode"
+                value={formData.zipcode}
+                onChange={handleChange}
+                placeholder="e.g., 97201"
+                className={fieldErrors.zipcode ? 'input-error' : ''}
+              />
               {fieldErrors.zipcode && <span className="field-error">{fieldErrors.zipcode}</span>}
             </div>
           </div>
@@ -389,7 +358,7 @@ function CreateEvent({ isOpen, onClose, onEventCreated }) {
           {error && <div className="error-message">{error}</div>}
 
           <div className="modal-actions">
-            <button type="button" className="btn-cancel" onClick={onClose}>
+            <button type="button" className="btn-cancel" onClick={handleCloseModal}>
               Cancel
             </button>
             <button type="submit" className="btn-submit" disabled={loading}>

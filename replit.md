@@ -89,6 +89,13 @@ Runs automatically at port 8080, exposed publicly
 
 ## Implemented Features
 
+### Address Autocomplete (Create Event)
+The Create Event form features smart address autocomplete:
+- **Location Field**: When user types 3+ characters, real address suggestions appear from OpenStreetMap (Photon API)
+- **Auto-fill**: Selecting an address automatically fills City, Area, and Zipcode fields
+- **Manual Override**: Users can still manually edit any field after selection or skip autocomplete entirely
+- **Free API**: Uses Photon (OpenStreetMap-based) - no API key required, no costs
+
 ### Event Display
 - Grid layout with event cards showing icons, titles, locations, capacity
 - Category badges (Events, Sports, Fitness)
