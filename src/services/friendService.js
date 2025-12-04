@@ -54,16 +54,16 @@ export const friendService = {
     return handleResponse(response);
   },
 
-  async acceptFriendRequest(requestId) {
-    const response = await fetch(`${API_BASE_URL}/friends/request/${requestId}/accept`, {
+  async acceptFriendRequest(friendshipId) {
+    const response = await fetch(`${API_BASE_URL}/friends/accept/${friendshipId}`, {
       method: 'POST',
       headers: getAuthHeaders()
     });
     return handleResponse(response);
   },
 
-  async rejectFriendRequest(requestId) {
-    const response = await fetch(`${API_BASE_URL}/friends/request/${requestId}/reject`, {
+  async rejectFriendRequest(friendshipId) {
+    const response = await fetch(`${API_BASE_URL}/friends/reject/${friendshipId}`, {
       method: 'POST',
       headers: getAuthHeaders()
     });
