@@ -140,7 +140,7 @@ function FeaturedEvents({ categoryFilter, onFilterApplied, onAuthRequired }) {
       setEvents(prevEvents => 
         prevEvents.map(event => 
           event.id === eventId 
-            ? { ...event, attendees: (event.attendees || 0) + 1 }
+            ? { ...event, attendees: (event.attendees || 0) + 1, hasJoined: true }
             : event
         )
       );
@@ -148,7 +148,7 @@ function FeaturedEvents({ categoryFilter, onFilterApplied, onAuthRequired }) {
       setFiltered(prevFiltered =>
         prevFiltered.map(event =>
           event.id === eventId
-            ? { ...event, attendees: (event.attendees || 0) + 1 }
+            ? { ...event, attendees: (event.attendees || 0) + 1, hasJoined: true }
             : event
         )
       );
@@ -156,7 +156,14 @@ function FeaturedEvents({ categoryFilter, onFilterApplied, onAuthRequired }) {
       alert('Successfully joined the event!');
     } catch (error) {
       console.error('Error joining event:', error);
-      alert('Could not join event: ' + error.message);
+      const errorMsg = error.message?.toLowerCase() || '';
+      if (errorMsg.includes('already joined')) {
+        alert("You've already joined this event! Check 'My Events' in your profile menu.");
+      } else if (errorMsg.includes('full')) {
+        alert('Sorry, this event is now full.');
+      } else {
+        alert('Could not join event: ' + error.message);
+      }
     }
   };
 
