@@ -41,10 +41,6 @@ externalPort = 80
 localPort = 40727
 externalPort = 3000
 
-[[ports]]
-localPort = 45783
-externalPort = 3002
-
 [deployment]
 deploymentTarget = "static"
 run = ["npx", "vite", "preview"]
