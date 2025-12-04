@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { eventService } from '../services/api';
+import { eventService } from '../services/eventService';
 import { userService } from '../services/userService';
 import './EventCard.css';
 

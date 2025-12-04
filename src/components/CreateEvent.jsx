@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { eventService } from '../services/api';
+import { eventService } from '../services/eventService';
 import { searchAddresses, cancelSearch } from '../services/addressService';
 import './CreateEvent.css';
 

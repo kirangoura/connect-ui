@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { eventService } from '../services/api';
+import { eventService } from '../services/eventService';
 import { useAuth } from '../context/AuthContext';
 
 function FeaturedEvents({ categoryFilter, onFilterApplied, onAuthRequired }) {

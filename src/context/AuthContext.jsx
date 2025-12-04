@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authService } from '../services/authService';
+import { userService } from '../services/userService';
 
 const AuthContext = createContext(null);
 
@@ -66,7 +67,7 @@ export function AuthProvider({ children }) {
 
   const updateProfile = async (profileData) => {
     try {
-      const updatedUser = await authService.updateProfile(profileData);
+      const updatedUser = await userService.updateMyProfile(profileData);
       setUser(updatedUser);
       return updatedUser;
     } catch (err) {
