@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { eventService } from '../services/api';
+import { eventService } from '../services/eventService';
+import { useAuth } from '../context/AuthContext';
 
-function FeaturedEvents({ categoryFilter, onFilterApplied }) {
+function FeaturedEvents({ categoryFilter, onFilterApplied, onAuthRequired }) {
+  const { isAuthenticated } = useAuth();
   const [events, setEvents] = useState([]);
+  const [joinedEventIds, setJoinedEventIds] = useState(new Set());
   const [searchLocation, setSearchLocation] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [filtered, setFiltered] = useState([]);
@@ -73,10 +76,30 @@ function FeaturedEvents({ categoryFilter, onFilterApplied }) {
     }
   };
 
+  // Fetch user's joined events when authenticated
+  const fetchJoinedEvents = async () => {
+    if (!isAuthenticated) {
+      setJoinedEventIds(new Set());
+      return;
+    }
+    try {
+      const myEvents = await eventService.getMyEvents();
+      const ids = new Set(myEvents.map(e => e.id));
+      setJoinedEventIds(ids);
+    } catch (error) {
+      console.error('Error fetching joined events:', error);
+    }
+  };
+
   // Fetch events on component mount
   useEffect(() => {
     fetchEvents();
   }, []);
+
+  // Fetch joined events when auth status changes
+  useEffect(() => {
+    fetchJoinedEvents();
+  }, [isAuthenticated]);
 
   // Set up polling to check for new events every 10 seconds
   useEffect(() => {
@@ -127,13 +150,18 @@ function FeaturedEvents({ categoryFilter, onFilterApplied }) {
   };
 
   const handleJoinEvent = async (eventId) => {
+    if (!isAuthenticated) {
+      onAuthRequired?.();
+      return;
+    }
+    
     try {
       const result = await eventService.joinEvent(eventId);
       
       setEvents(prevEvents => 
         prevEvents.map(event => 
           event.id === eventId 
-            ? { ...event, attendees: (event.attendees || 0) + 1 }
+            ? { ...event, attendees: (event.attendees || 0) + 1, hasJoined: true }
             : event
         )
       );
@@ -141,15 +169,24 @@ function FeaturedEvents({ categoryFilter, onFilterApplied }) {
       setFiltered(prevFiltered =>
         prevFiltered.map(event =>
           event.id === eventId
-            ? { ...event, attendees: (event.attendees || 0) + 1 }
+            ? { ...event, attendees: (event.attendees || 0) + 1, hasJoined: true }
             : event
         )
       );
       
+      setJoinedEventIds(prev => new Set([...prev, eventId]));
+      
       alert('Successfully joined the event!');
     } catch (error) {
       console.error('Error joining event:', error);
-      alert('Could not join event: ' + error.message);
+      const errorMsg = error.message?.toLowerCase() || '';
+      if (errorMsg.includes('already joined')) {
+        alert("You've already joined this event! Check 'My Events' in your profile menu.");
+      } else if (errorMsg.includes('full')) {
+        alert('Sorry, this event is now full.');
+      } else {
+        alert('Could not join event: ' + error.message);
+      }
     }
   };
 
@@ -236,14 +273,20 @@ function FeaturedEvents({ categoryFilter, onFilterApplied }) {
                 <p className="event-detail">🏙️ {event.city}{event.area ? `, ${event.area}` : ''} {event.zipcode}</p>
                 <p className="event-detail">🕐 {event.date}</p>
                 <p className="event-detail">👥 {event.attendees || 0}/{event.maxAttendees} attending</p>
-                <button 
-                  className="btn-primary" 
-                  onClick={() => handleJoinEvent(event.id)}
-                  disabled={(event.attendees || 0) >= event.maxAttendees}
-                  style={{ opacity: (event.attendees || 0) >= event.maxAttendees ? 0.5 : 1, cursor: (event.attendees || 0) >= event.maxAttendees ? 'not-allowed' : 'pointer' }}
-                >
-                  {(event.attendees || 0) >= event.maxAttendees ? 'Event Full' : 'Join Event'}
-                </button>
+                {joinedEventIds.has(event.id) ? (
+                  <button className="btn-joined" disabled>
+                    Joined
+                  </button>
+                ) : (
+                  <button 
+                    className="btn-primary" 
+                    onClick={() => handleJoinEvent(event.id)}
+                    disabled={(event.attendees || 0) >= event.maxAttendees}
+                    style={{ opacity: (event.attendees || 0) >= event.maxAttendees ? 0.5 : 1, cursor: (event.attendees || 0) >= event.maxAttendees ? 'not-allowed' : 'pointer' }}
+                  >
+                    {(event.attendees || 0) >= event.maxAttendees ? 'Event Full' : 'Join Event'}
+                  </button>
+                )}
               </div>
             </div>
           ))}

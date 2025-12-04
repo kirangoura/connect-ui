@@ -138,6 +138,17 @@ body {
     font-size: 1.125rem;
 }
 
+.btn-joined {
+    background: var(--secondary-color);
+    color: var(--white);
+    border: none;
+    padding: 0.625rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: default;
+    opacity: 0.9;
+}
+
 /* Hero Section */
 .hero {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

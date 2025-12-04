@@ -1,0 +1,44 @@
+2025-12-04T01:37:36.271Z TRACE 10736 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : 
+    c.c.c.AuthController:
+    {POST [/auth/logout]}: logout()
+    {POST [/auth/signup]}: signup(SignupRequest)
+    {POST [/auth/login]}: login(AuthRequest)
+    {GET [/auth/me]}: getCurrentUser(User)
+2025-12-04T01:37:36.277Z TRACE 10736 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : 
+    c.c.c.EventController:
+    {GET [/events]}: getAllEvents()
+    {POST [/events]}: createEvent(User,Event)
+    {PUT [/events/{id}]}: updateEvent(Long,Event)
+    {DELETE [/events/{id}]}: deleteEvent(Long)
+    {POST [/events/{id}/join]}: joinEvent(Long,User)
+    {POST [/events/{id}/leave]}: leaveEvent(Long,User)
+    {GET [/events/my]}: getMyEvents(User)
+    {GET [/events/created]}: getCreatedEvents(User)
+    {GET [/events/friends]}: getFriendsEvents(User)
+    {GET [/events/{id}]}: getEvent(Long)
+    {GET [/events/{id}/joined]}: checkJoined(Long,User)
+    {GET [/events/search]}: searchEvents(String,String)
+2025-12-04T01:37:36.279Z TRACE 10736 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : 
+    c.c.c.FavoriteController:
+    {POST [/favorites/{eventId}]}: addFavorite(User,Long)
+    {DELETE [/favorites/{eventId}]}: removeFavorite(User,Long)
+    {GET [/favorites]}: getFavorites(User)
+    {GET [/favorites/{eventId}/check]}: checkFavorite(User,Long)
+2025-12-04T01:37:36.280Z TRACE 10736 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : 
+    c.c.c.FriendshipController:
+    {GET [/friends]}: getFriends(User)
+    {POST [/friends/request/{userId}]}: sendFriendRequest(User,Long)
+    {GET [/friends/requests/pending]}: getPendingRequests(User)
+    {GET [/friends/requests/sent]}: getSentRequests(User)
+    {POST [/friends/accept/{friendshipId}]}: acceptFriendRequest(User,Long)
+    {POST [/friends/reject/{friendshipId}]}: rejectFriendRequest(User,Long)
+    {DELETE [/friends/{friendId}]}: removeFriend(User,Long)
+2025-12-04T01:37:36.281Z TRACE 10736 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : 
+    c.c.c.UserController:
+    {GET [/users/profile]}: getProfile(User)
+    {PUT [/users/profile]}: updateProfile(User,UpdateProfileRequest)
+    {GET [/users/{id}]}: getUserById(Long)
+2025-12-04T01:37:36.286Z TRACE 10736 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : 
+    o.s.b.a.w.s.e.BasicErrorController:
+    { [/error]}: error(HttpServletRequest)
+    { [/error], produces [text/html]}: errorHtml(HttpServletRequest,HttpServletResponse)
