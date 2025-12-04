@@ -22,7 +22,24 @@ const handleResponse = async (response) => {
 };
 
 export const userService = {
-  async getProfile(userId) {
+  async getMyProfile() {
+    const response = await fetch(`${API_BASE_URL}/users/profile`, {
+      method: 'GET',
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  },
+
+  async updateMyProfile(profileData) {
+    const response = await fetch(`${API_BASE_URL}/users/profile`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(profileData)
+    });
+    return handleResponse(response);
+  },
+
+  async getUserById(userId) {
     const response = await fetch(`${API_BASE_URL}/users/${userId}`, {
       method: 'GET',
       headers: getAuthHeaders()
@@ -65,6 +82,14 @@ export const userService = {
   async removeFavorite(eventId) {
     const response = await fetch(`${API_BASE_URL}/favorites/${eventId}`, {
       method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  },
+
+  async checkFavorite(eventId) {
+    const response = await fetch(`${API_BASE_URL}/favorites/${eventId}/check`, {
+      method: 'GET',
       headers: getAuthHeaders()
     });
     return handleResponse(response);

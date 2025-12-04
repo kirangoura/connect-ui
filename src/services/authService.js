@@ -51,15 +51,6 @@ export const authService = {
     return handleResponse(response);
   },
 
-  async updateProfile(profileData) {
-    const response = await fetch(`${API_BASE_URL}/users/profile`, {
-      method: 'PUT',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(profileData)
-    });
-    return handleResponse(response);
-  },
-
   async refreshToken() {
     const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
       method: 'POST',
