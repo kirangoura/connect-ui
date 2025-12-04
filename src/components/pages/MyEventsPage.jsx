@@ -23,6 +23,10 @@ function MyEventsPage({ onBack }) {
     }
   };
 
+  const handleLeaveEvent = (eventId) => {
+    setEvents(events.filter(e => e.id !== eventId));
+  };
+
   return (
     <div className="page-container">
       <div className="page-header">
@@ -61,7 +65,12 @@ function MyEventsPage({ onBack }) {
       ) : (
         <div className="events-grid">
           {events.map(event => (
-            <EventCard key={event.id} event={event} showLeaveOption />
+            <EventCard 
+              key={event.id} 
+              event={event} 
+              showLeaveOption 
+              onLeave={handleLeaveEvent}
+            />
           ))}
         </div>
       )}

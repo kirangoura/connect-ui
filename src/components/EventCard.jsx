@@ -4,10 +4,11 @@ import { eventService } from '../services/eventService';
 import { userService } from '../services/userService';
 import './EventCard.css';
 
-function EventCard({ event, showLeaveOption, isOwner, isFavorite, onRemoveFavorite, onUpdate }) {
+function EventCard({ event, showLeaveOption, isOwner, isFavorite, onRemoveFavorite, onUpdate, onLeave }) {
   const { isAuthenticated } = useAuth();
   const [loading, setLoading] = useState(false);
   const [isSaved, setIsSaved] = useState(isFavorite);
+  const [leaving, setLeaving] = useState(false);
 
   const getCategoryIcon = (category) => {
     const icons = {
@@ -57,6 +58,23 @@ function EventCard({ event, showLeaveOption, isOwner, isFavorite, onRemoveFavori
     }
   };
 
+  const handleLeaveEvent = async () => {
+    if (!window.confirm('Are you sure you want to leave this event?')) {
+      return;
+    }
+    setLeaving(true);
+    try {
+      await eventService.leaveEvent(event.id);
+      alert('You have left the event.');
+      onLeave?.(event.id);
+    } catch (error) {
+      console.error('Error leaving event:', error);
+      alert('Could not leave event: ' + error.message);
+    } finally {
+      setLeaving(false);
+    }
+  };
+
   const isFull = (event.attendees || 0) >= event.maxAttendees;
 
   return (
@@ -101,7 +119,13 @@ function EventCard({ event, showLeaveOption, isOwner, isFavorite, onRemoveFavori
 
         <div className="event-card-actions">
           {showLeaveOption ? (
-            <button className="btn-secondary">Leave Event</button>
+            <button 
+              className="btn-secondary btn-leave"
+              onClick={handleLeaveEvent}
+              disabled={leaving}
+            >
+              {leaving ? 'Leaving...' : 'Leave Event'}
+            </button>
           ) : (
             <button 
               className="btn-primary" 
