@@ -16,17 +16,38 @@ Connect is a community platform that facilitates real-world connections through 
 - Protected pages and actions
 - User menu with navigation
 
-### Pending Backend Work (connect-api)
-The frontend User Module is complete but requires corresponding backend endpoints:
-- `/api/auth/login` - User login
-- `/api/auth/signup` - User registration
-- `/api/auth/logout` - Logout
-- `/api/auth/me` - Get current user
-- `/api/users/me` - Update profile
-- `/api/friends/*` - Friend request endpoints
-- `/api/users/me/events` - User's joined events
-- `/api/users/me/created-events` - User's created events
-- `/api/users/me/favorites/*` - Saved events
+### Backend Endpoints (All Implemented)
+The frontend is now aligned with all backend API endpoints:
+
+**Auth:**
+- `POST /api/auth/login` - User login
+- `POST /api/auth/signup` - User registration
+- `POST /api/auth/logout` - Logout
+- `GET /api/auth/me` - Get current user
+
+**Events:**
+- `GET /api/events` - List all events
+- `GET /api/events/my` - User's joined events
+- `GET /api/events/created` - User's created events
+- `GET /api/events/friends` - Friends' events
+- `POST /api/events/{id}/join` - Join event
+- `POST /api/events/{id}/leave` - Leave event
+
+**Favorites:**
+- `GET /api/favorites` - Get user's favorites
+- `POST /api/favorites/{eventId}` - Add favorite
+- `DELETE /api/favorites/{eventId}` - Remove favorite
+
+**Friends:**
+- `GET /api/friends` - Get friend list
+- `POST /api/friends/request/{userId}` - Send request
+- `POST /api/friends/accept/{id}` - Accept request
+- `POST /api/friends/reject/{id}` - Reject request
+- `DELETE /api/friends/{friendId}` - Remove friend
+
+**Users:**
+- `GET /api/users/profile` - Get profile
+- `PUT /api/users/profile` - Update profile
 
 ## System Architecture
 
