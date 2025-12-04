@@ -31,7 +31,7 @@ export const userService = {
   },
 
   async getMyEvents() {
-    const response = await fetch(`${API_BASE_URL}/users/me/events`, {
+    const response = await fetch(`${API_BASE_URL}/events/my`, {
       method: 'GET',
       headers: getAuthHeaders()
     });
@@ -39,7 +39,7 @@ export const userService = {
   },
 
   async getMyCreatedEvents() {
-    const response = await fetch(`${API_BASE_URL}/users/me/created-events`, {
+    const response = await fetch(`${API_BASE_URL}/events/created`, {
       method: 'GET',
       headers: getAuthHeaders()
     });
@@ -47,7 +47,7 @@ export const userService = {
   },
 
   async getFavorites() {
-    const response = await fetch(`${API_BASE_URL}/users/me/favorites`, {
+    const response = await fetch(`${API_BASE_URL}/favorites`, {
       method: 'GET',
       headers: getAuthHeaders()
     });
@@ -55,7 +55,7 @@ export const userService = {
   },
 
   async addFavorite(eventId) {
-    const response = await fetch(`${API_BASE_URL}/users/me/favorites/${eventId}`, {
+    const response = await fetch(`${API_BASE_URL}/favorites/${eventId}`, {
       method: 'POST',
       headers: getAuthHeaders()
     });
@@ -63,7 +63,7 @@ export const userService = {
   },
 
   async removeFavorite(eventId) {
-    const response = await fetch(`${API_BASE_URL}/users/me/favorites/${eventId}`, {
+    const response = await fetch(`${API_BASE_URL}/favorites/${eventId}`, {
       method: 'DELETE',
       headers: getAuthHeaders()
     });

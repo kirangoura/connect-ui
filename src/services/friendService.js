@@ -79,7 +79,7 @@ export const friendService = {
   },
 
   async getFriendsEvents() {
-    const response = await fetch(`${API_BASE_URL}/friends/events`, {
+    const response = await fetch(`${API_BASE_URL}/events/friends`, {
       method: 'GET',
       headers: getAuthHeaders()
     });
