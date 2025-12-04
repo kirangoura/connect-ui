@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { eventService } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
-function FeaturedEvents({ categoryFilter, onFilterApplied }) {
+function FeaturedEvents({ categoryFilter, onFilterApplied, onAuthRequired }) {
+  const { isAuthenticated } = useAuth();
   const [events, setEvents] = useState([]);
   const [searchLocation, setSearchLocation] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -127,6 +129,11 @@ function FeaturedEvents({ categoryFilter, onFilterApplied }) {
   };
 
   const handleJoinEvent = async (eventId) => {
+    if (!isAuthenticated) {
+      onAuthRequired?.();
+      return;
+    }
+    
     try {
       const result = await eventService.joinEvent(eventId);
       

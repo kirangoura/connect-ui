@@ -1,45 +1,69 @@
 import React, { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import UserMenu from './UserMenu';
+import './Navbar.css';
 
-function Navbar({ onCreateEvent, onCategoryFilter }) {
+function Navbar({ onCreateEvent, onCategoryFilter, onOpenAuth, onNavigate }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { isAuthenticated, loading } = useAuth();
 
   const scrollToSection = (e, sectionId) => {
     e.preventDefault();
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    onNavigate?.('home');
+    setTimeout(() => {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
     setMenuOpen(false);
   };
 
   const handleCategoryClick = (e, category) => {
     e.preventDefault();
     onCategoryFilter?.(category);
-    const element = document.getElementById('events');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    onNavigate?.('home');
+    setTimeout(() => {
+      const element = document.getElementById('events');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
     setMenuOpen(false);
   };
 
   const handleJoinNow = (e) => {
     e.preventDefault();
-    const element = document.getElementById('events');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    onNavigate?.('home');
+    setTimeout(() => {
+      const element = document.getElementById('events');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
     setMenuOpen(false);
   };
 
   const handleCreateEvent = () => {
+    if (!isAuthenticated) {
+      onOpenAuth?.('login');
+      return;
+    }
     onCreateEvent?.();
     setMenuOpen(false);
+  };
+
+  const handleLogoClick = () => {
+    onNavigate?.('home');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
     <nav className="navbar">
       <div className="nav-container">
-        <div className="logo">Connect</div>
+        <div className="logo" onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
+          Connect
+        </div>
         
         <button 
           className="hamburger"
@@ -56,8 +80,25 @@ function Navbar({ onCreateEvent, onCategoryFilter }) {
           <a href="#sports" onClick={(e) => handleCategoryClick(e, 'Sports')}>Sports</a>
           <a href="#fitness" onClick={(e) => handleCategoryClick(e, 'Fitness')}>Fitness</a>
           <a href="#about" onClick={(e) => scrollToSection(e, 'about')}>About</a>
-          <button className="btn-secondary" onClick={handleCreateEvent}>Create Event</button>
-          <button className="btn-primary" onClick={handleJoinNow}>Join Now</button>
+          
+          <button className="btn-secondary nav-create-btn" onClick={handleCreateEvent}>
+            Create Event
+          </button>
+          
+          {loading ? (
+            <div className="auth-loading"></div>
+          ) : isAuthenticated ? (
+            <UserMenu onNavigate={onNavigate} />
+          ) : (
+            <div className="auth-buttons">
+              <button className="btn-login" onClick={() => onOpenAuth?.('login')}>
+                Sign In
+              </button>
+              <button className="btn-primary" onClick={() => onOpenAuth?.('signup')}>
+                Sign Up
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </nav>
