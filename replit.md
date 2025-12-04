@@ -151,20 +151,66 @@ src/
 ├── context/
 │   └── AuthContext.jsx
 ├── services/
-│   ├── api.js
-│   ├── authService.js
-│   ├── userService.js
-│   ├── friendService.js
+│   ├── index.js          # Clean exports for all services
+│   ├── authService.js    # Login, signup, logout, getMe
+│   ├── userService.js    # Profile, favorites, discover, search
+│   ├── friendService.js  # Friends, requests, accept/reject
+│   ├── eventService.js   # Events CRUD, join/leave, search
 │   └── addressProviders/
 └── App.jsx
 ```
 
+## API Services (Complete Swagger Alignment)
+
+### authService.js
+- `login(email, password)` - POST /auth/login
+- `signup(userData)` - POST /auth/signup
+- `logout()` - POST /auth/logout
+- `getMe()` - GET /auth/me
+
+### userService.js
+- `getMyProfile()` - GET /users/profile
+- `updateMyProfile(data)` - PUT /users/profile
+- `getUserById(id)` - GET /users/{id}
+- `discoverPeople(page, size)` - GET /users/discover
+- `searchUsers(query)` - GET /users/search
+- `getMyEvents()` - GET /events/my
+- `getMyCreatedEvents()` - GET /events/created
+- `getFavorites()` - GET /favorites
+- `addFavorite(eventId)` - POST /favorites/{eventId}
+- `removeFavorite(eventId)` - DELETE /favorites/{eventId}
+- `checkFavorite(eventId)` - GET /favorites/{eventId}/check
+
+### friendService.js
+- `getFriends()` - GET /friends
+- `getPendingRequests()` - GET /friends/requests/pending
+- `getSentRequests()` - GET /friends/requests/sent
+- `sendFriendRequest(userId)` - POST /friends/request/{userId}
+- `acceptFriendRequest(id)` - POST /friends/accept/{id}
+- `rejectFriendRequest(id)` - POST /friends/reject/{id}
+- `removeFriend(friendId)` - DELETE /friends/{friendId}
+- `getFriendsEvents()` - GET /events/friends
+
+### eventService.js
+- `getAllEvents()` - GET /events
+- `getEvent(id)` - GET /events/{id}
+- `createEvent(data)` - POST /events
+- `updateEvent(id, data)` - PUT /events/{id}
+- `deleteEvent(id)` - DELETE /events/{id}
+- `joinEvent(id)` - POST /events/{id}/join
+- `leaveEvent(id)` - POST /events/{id}/leave
+- `checkJoined(id)` - GET /events/{id}/joined
+- `searchEvents(query, category)` - GET /events/search
+- `getMyEvents()` - GET /events/my
+- `getCreatedEvents()` - GET /events/created
+- `getFriendsEvents()` - GET /events/friends
+
 ## Next Steps
 
-To complete the User Module:
-1. Implement auth endpoints in connect-api (Spring Security + JWT)
-2. Add users, friendships, event_attendees tables in connect-db
-3. Test full authentication flow end-to-end
+The User Module is now complete:
+- All backend API endpoints are implemented (see Swagger at /api/swagger-ui/index.html)
+- All frontend services are aligned with Swagger documentation
+- Ready for end-to-end testing
 
 ## Address Autocomplete Feature
 
